@@ -1,5 +1,5 @@
 {
-  "run_at": "2026-10-29T17:27:59+00:00",
+  "run_at": "2026-10-29T17:35:44+00:00",
   "environment": {
     "python": "3.13.14",
     "machine": "arm64",
@@ -71,7 +71,7 @@
     "top10": [
       {
         "cluster_id": 14,
-        "label": "AI automation benefits for small businesses",
+        "label": "AI business automation benefits",
         "status": "Gap",
         "score": 83.59
       },
@@ -83,13 +83,13 @@
       },
       {
         "cluster_id": 47,
-        "label": "AI for operational problems",
+        "label": "AI operational problem identification",
         "status": "Weak spot",
         "score": 71.82
       },
       {
         "cluster_id": 4,
-        "label": "WhatsApp chatbot CRM integration",
+        "label": "WhatsApp chatbot automation",
         "status": "Weak spot",
         "score": 71.73
       },
@@ -107,7 +107,7 @@
       },
       {
         "cluster_id": 28,
-        "label": "AWS vs Azure vs GCP comparison",
+        "label": "Cloud provider comparison",
         "status": "Weak spot",
         "score": 64.02
       },
@@ -119,13 +119,13 @@
       },
       {
         "cluster_id": 17,
-        "label": "business process automation",
+        "label": "Business Process Automation",
         "status": "Gap",
         "score": 54.25
       },
       {
         "cluster_id": 23,
-        "label": "Private LLM deployment for Indian enterprises",
+        "label": "On-prem LLM deployment for Indian enterprises",
         "status": "Gap",
         "score": 53.23
       }
@@ -190,19 +190,21 @@
   "briefs": {
     "count": 10,
     "llm": 10,
-    "template": 0
+    "template": 0,
+    "retries": 1,
+    "copy_check_failures": 1
   },
   "llm": {
     "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
-    "calls": 60,
+    "calls": 61,
     "calls_by_purpose": {
       "label": 50,
-      "brief": 10
+      "brief": 11
     },
-    "total_prompt_tokens": 47363,
-    "total_completion_tokens": 6340,
-    "mean_latency_s": 2.51,
-    "max_latency_s": 51.61
+    "total_prompt_tokens": 48939,
+    "total_completion_tokens": 6555,
+    "mean_latency_s": 2.27,
+    "max_latency_s": 29.81
   },
   "evaluation": {
     "label_template_written": true,
@@ -342,7 +344,7 @@
         "top10_labelled_0": [
           {
             "cluster_id": 14,
-            "label": "AI automation benefits for small businesses",
+            "label": "AI business automation benefits",
             "score_rank": 1,
             "score": 83.59,
             "status": "Gap",
@@ -353,7 +355,7 @@
           },
           {
             "cluster_id": 47,
-            "label": "AI for operational problems",
+            "label": "AI operational problem identification",
             "score_rank": 3,
             "score": 71.82,
             "status": "Weak spot",
@@ -375,7 +377,7 @@
           },
           {
             "cluster_id": 17,
-            "label": "business process automation",
+            "label": "Business Process Automation",
             "score_rank": 9,
             "score": 54.25,
             "status": "Gap",
@@ -421,7 +423,7 @@
           },
           {
             "cluster_id": 0,
-            "label": "GraphQL vs REST API",
+            "label": "GraphQL vs REST APIs",
             "score_rank": 23,
             "score": 43.45,
             "status": "Gap",
@@ -432,7 +434,7 @@
           },
           {
             "cluster_id": 31,
-            "label": "software project requirements",
+            "label": "software development project planning",
             "score_rank": 25,
             "score": 41.05,
             "status": "Gap",
@@ -454,7 +456,7 @@
           },
           {
             "cluster_id": 6,
-            "label": "AI in Indian Banking",
+            "label": "AI in BFSI India",
             "score_rank": 29,
             "score": 37.61,
             "status": "Gap",
@@ -465,7 +467,7 @@
           },
           {
             "cluster_id": 22,
-            "label": "AI data readiness",
+            "label": "data readiness for AI projects",
             "score_rank": 31,
             "score": 37.36,
             "status": "Gap",
@@ -476,7 +478,7 @@
           },
           {
             "cluster_id": 11,
-            "label": "approval workflow automation",
+            "label": "Approval workflow automation",
             "score_rank": 38,
             "score": 34.6,
             "status": "Gap",
@@ -520,14 +522,14 @@
     ]
   },
   "runtime_seconds": {
-    "sectionize": 0.1,
-    "embed": 16.1,
-    "cluster": 5.48,
-    "label": 104.92,
-    "gaps_and_score": 0.13,
-    "briefs": 48.89,
-    "evaluate": 0.4,
-    "total": 176.02
+    "sectionize": 0.13,
+    "embed": 19.4,
+    "cluster": 6.04,
+    "label": 48.95,
+    "gaps_and_score": 0.17,
+    "briefs": 92.64,
+    "evaluate": 0.48,
+    "total": 167.81
   },
   "flags": {
     "skip_crawl": true,
