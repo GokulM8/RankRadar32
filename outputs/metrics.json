@@ -1,0 +1,536 @@
+{
+  "run_at": "2026-10-29T17:27:59+00:00",
+  "environment": {
+    "python": "3.13.14",
+    "machine": "arm64",
+    "system": "Darwin"
+  },
+  "data": {
+    "pages_per_site": {
+      "Canny Technologies": 36,
+      "Cynbit": 25,
+      "Proeffico": 39
+    },
+    "sections_per_site": {
+      "Canny Technologies": 263,
+      "Cynbit": 165,
+      "Proeffico": 360
+    },
+    "total_pages": 100,
+    "total_sections": 788,
+    "section_words": {
+      "median": 104.5,
+      "mean": 126.7,
+      "min": 21,
+      "max": 350
+    },
+    "extractor_counts": {
+      "beautifulsoup": 69,
+      "trafilatura": 31
+    }
+  },
+  "embedding_model": "BAAI/bge-small-en-v1.5",
+  "clustering": {
+    "n_sections": 788,
+    "n_clusters": 50,
+    "noise_sections": 126,
+    "noise_ratio": 0.1599,
+    "cluster_size": {
+      "min": 5,
+      "median": 10.0,
+      "max": 81,
+      "mean": 13.24
+    },
+    "silhouette_embedding_cosine": 0.1325,
+    "silhouette_umap_euclidean": 0.6012
+  },
+  "labels": {
+    "llm": 50,
+    "keywords": 0
+  },
+  "gaps": {
+    "status_counts": {
+      "Gap": 30,
+      "Weak spot": 10,
+      "Covered": 5,
+      "Client-only": 5
+    },
+    "scored_clusters": 40,
+    "effort_threshold": 0.8483,
+    "competitors_crawled": 2,
+    "score": {
+      "max": 83.59,
+      "median": 44.175,
+      "min": 25.56
+    },
+    "intent_counts_scored": {
+      "commercial": 24,
+      "transactional": 8,
+      "informational": 8
+    },
+    "top10": [
+      {
+        "cluster_id": 14,
+        "label": "AI automation benefits for small businesses",
+        "status": "Gap",
+        "score": 83.59
+      },
+      {
+        "cluster_id": 2,
+        "label": "AI logistics automation",
+        "status": "Weak spot",
+        "score": 73.92
+      },
+      {
+        "cluster_id": 47,
+        "label": "AI for operational problems",
+        "status": "Weak spot",
+        "score": 71.82
+      },
+      {
+        "cluster_id": 4,
+        "label": "WhatsApp chatbot CRM integration",
+        "status": "Weak spot",
+        "score": 71.73
+      },
+      {
+        "cluster_id": 1,
+        "label": "AI implementation in Indian healthcare",
+        "status": "Weak spot",
+        "score": 70.33
+      },
+      {
+        "cluster_id": 16,
+        "label": "payroll automation ROI",
+        "status": "Weak spot",
+        "score": 66.89
+      },
+      {
+        "cluster_id": 28,
+        "label": "AWS vs Azure vs GCP comparison",
+        "status": "Weak spot",
+        "score": 64.02
+      },
+      {
+        "cluster_id": 46,
+        "label": "Custom CRM vs Salesforce cost comparison",
+        "status": "Weak spot",
+        "score": 59.6
+      },
+      {
+        "cluster_id": 17,
+        "label": "business process automation",
+        "status": "Gap",
+        "score": 54.25
+      },
+      {
+        "cluster_id": 23,
+        "label": "Private LLM deployment for Indian enterprises",
+        "status": "Gap",
+        "score": 53.23
+      }
+    ]
+  },
+  "sensitivity": {
+    "top_k": 10,
+    "delta": 0.1,
+    "perturbations": [
+      {
+        "weight": "relevance",
+        "delta": -0.1,
+        "top_k_overlap": 10,
+        "of": 10
+      },
+      {
+        "weight": "relevance",
+        "delta": 0.1,
+        "top_k_overlap": 10,
+        "of": 10
+      },
+      {
+        "weight": "competitor_strength",
+        "delta": -0.1,
+        "top_k_overlap": 10,
+        "of": 10
+      },
+      {
+        "weight": "competitor_strength",
+        "delta": 0.1,
+        "top_k_overlap": 10,
+        "of": 10
+      },
+      {
+        "weight": "intent",
+        "delta": -0.1,
+        "top_k_overlap": 10,
+        "of": 10
+      },
+      {
+        "weight": "intent",
+        "delta": 0.1,
+        "top_k_overlap": 9,
+        "of": 10
+      },
+      {
+        "weight": "effort",
+        "delta": -0.1,
+        "top_k_overlap": 10,
+        "of": 10
+      },
+      {
+        "weight": "effort",
+        "delta": 0.1,
+        "top_k_overlap": 10,
+        "of": 10
+      }
+    ],
+    "mean_overlap": 9.88,
+    "min_overlap": 9
+  },
+  "briefs": {
+    "count": 10,
+    "llm": 10,
+    "template": 0
+  },
+  "llm": {
+    "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+    "calls": 60,
+    "calls_by_purpose": {
+      "label": 50,
+      "brief": 10
+    },
+    "total_prompt_tokens": 47363,
+    "total_completion_tokens": 6340,
+    "mean_latency_s": 2.51,
+    "max_latency_s": 51.61
+  },
+  "evaluation": {
+    "label_template_written": true,
+    "precision": {
+      "label_file": "gap_labels_filled.csv",
+      "n_labelled": 31,
+      "n_real_gaps": 19,
+      "n_not_gaps": 12,
+      "provenance": {
+        "label_source": {
+          "ai_assisted_rubric_v1": 31
+        },
+        "human_overrides": 0,
+        "confidence": {
+          "medium": 12,
+          "high": 11,
+          "low": 8
+        }
+      },
+      "opportunity_score": {
+        "p@10": {
+          "k": 10,
+          "precision": 0.6,
+          "labelled": 10,
+          "relevant": 6
+        },
+        "p@25": {
+          "k": 25,
+          "precision": 0.6,
+          "labelled": 25,
+          "relevant": 15
+        }
+      },
+      "baseline_competitor_count": {
+        "p@10": {
+          "k": 10,
+          "precision": 0.8,
+          "labelled": 10,
+          "relevant": 8
+        },
+        "p@25": {
+          "k": 25,
+          "precision": 0.64,
+          "labelled": 25,
+          "relevant": 16
+        }
+      },
+      "excluding_low_confidence": {
+        "opportunity_score": {
+          "p@10": {
+            "k": 10,
+            "precision": 0.5556,
+            "labelled": 9,
+            "relevant": 5
+          },
+          "p@25": {
+            "k": 25,
+            "precision": 0.5263,
+            "labelled": 19,
+            "relevant": 10
+          }
+        },
+        "baseline_competitor_count": {
+          "p@10": {
+            "k": 10,
+            "precision": 0.7778,
+            "labelled": 9,
+            "relevant": 7
+          },
+          "p@25": {
+            "k": 25,
+            "precision": 0.6,
+            "labelled": 20,
+            "relevant": 12
+          }
+        }
+      },
+      "ablation_post_hoc": {
+        "without_relevance": {
+          "p@10": {
+            "k": 10,
+            "precision": 0.7,
+            "labelled": 10,
+            "relevant": 7
+          },
+          "p@25": {
+            "k": 25,
+            "precision": 0.5909,
+            "labelled": 22,
+            "relevant": 13
+          }
+        },
+        "without_competitor_strength": {
+          "p@10": {
+            "k": 10,
+            "precision": 0.6,
+            "labelled": 10,
+            "relevant": 6
+          },
+          "p@25": {
+            "k": 25,
+            "precision": 0.6522,
+            "labelled": 23,
+            "relevant": 15
+          }
+        },
+        "without_intent": {
+          "p@10": {
+            "k": 10,
+            "precision": 0.6,
+            "labelled": 10,
+            "relevant": 6
+          },
+          "p@25": {
+            "k": 25,
+            "precision": 0.625,
+            "labelled": 24,
+            "relevant": 15
+          }
+        },
+        "without_effort": {
+          "p@10": {
+            "k": 10,
+            "precision": 0.6,
+            "labelled": 10,
+            "relevant": 6
+          },
+          "p@25": {
+            "k": 25,
+            "precision": 0.6,
+            "labelled": 25,
+            "relevant": 15
+          }
+        }
+      },
+      "error_analysis": {
+        "top10_labelled_0": [
+          {
+            "cluster_id": 14,
+            "label": "AI automation benefits for small businesses",
+            "score_rank": 1,
+            "score": 83.59,
+            "status": "Gap",
+            "effort": 0.0,
+            "closest_client_similarity": 0.8616,
+            "competitor_self_mention": 0.118,
+            "notes": "Generic AI-automation benefits for MSMEs; already covered by Cynbit's 'How Small Businesses Can Automate Operations Using AI'."
+          },
+          {
+            "cluster_id": 47,
+            "label": "AI for operational problems",
+            "score_rank": 3,
+            "score": 71.82,
+            "status": "Weak spot",
+            "effort": 0.0,
+            "closest_client_similarity": 0.8539,
+            "competitor_self_mention": 0.429,
+            "notes": "Auditing which manual processes to automate first is already covered by 'How Small Businesses Can Automate Operations Using AI' (Step 1: Identifying the Automation-First Bottlenecks)."
+          },
+          {
+            "cluster_id": 16,
+            "label": "payroll automation ROI",
+            "score_rank": 6,
+            "score": 66.89,
+            "status": "Weak spot",
+            "effort": 0.0,
+            "closest_client_similarity": 0.8983,
+            "competitor_self_mention": 0.0,
+            "notes": "Mixed topic (business-process-automation ROI plus payroll); automation ROI is already covered in 'Top Productivity Automation Ideas' (How to Calculate the ROI of Automation) and the document-extraction post."
+          },
+          {
+            "cluster_id": 17,
+            "label": "business process automation",
+            "score_rank": 9,
+            "score": 54.25,
+            "status": "Gap",
+            "effort": 1.0,
+            "closest_client_similarity": 0.8245,
+            "competitor_self_mention": 0.111,
+            "notes": "Automation categories and tool choice (Zapier etc.) are already covered by 'Best Business Automation Tools in 2026' (Make.com vs Zapier, tool selection)."
+          }
+        ],
+        "rank_gt_15_labelled_1": [
+          {
+            "cluster_id": 29,
+            "label": "data modernization strategy",
+            "score_rank": 16,
+            "score": 48.15,
+            "status": "Gap",
+            "effort": 1.0,
+            "closest_client_similarity": 0.7995,
+            "competitor_self_mention": 0.2,
+            "notes": "Data/legacy modernization strategy fits Cynbit's legacy migration and modernization services; no Cynbit post covers it."
+          },
+          {
+            "cluster_id": 32,
+            "label": "breaking data silos",
+            "score_rank": 18,
+            "score": 45.67,
+            "status": "Weak spot",
+            "effort": 1.0,
+            "closest_client_similarity": 0.8421,
+            "competitor_self_mention": 0.769,
+            "notes": "Borderline: breaking data silos and system integration fits Cynbit's backend/integration work; 'Why Data Dashboards Are Essential' touches it only in one SSOT section, which isn't substantial."
+          },
+          {
+            "cluster_id": 27,
+            "label": "AI implementation timeline",
+            "score_rank": 21,
+            "score": 44.02,
+            "status": "Weak spot",
+            "effort": 1.0,
+            "closest_client_similarity": 0.8364,
+            "competitor_self_mention": 0.0,
+            "notes": "A realistic AI implementation timeline and phases is buyer content for Cynbit's AI automation; the AI agents and AI-powered business posts discuss getting started but not project timelines or phases."
+          },
+          {
+            "cluster_id": 0,
+            "label": "GraphQL vs REST API",
+            "score_rank": 23,
+            "score": 43.45,
+            "status": "Gap",
+            "effort": 1.0,
+            "closest_client_similarity": 0.7965,
+            "competitor_self_mention": 0.0,
+            "notes": "API design (GraphQL vs REST) and multi-tenant SaaS architecture fit Cynbit's backend/SaaS services; 'Top Web Development Trends' doesn't cover it. The cluster mixes two source articles."
+          },
+          {
+            "cluster_id": 31,
+            "label": "software project requirements",
+            "score_rank": 25,
+            "score": 41.05,
+            "status": "Gap",
+            "effort": 1.0,
+            "closest_client_similarity": 0.7844,
+            "competitor_self_mention": 0.0,
+            "notes": "Software cost estimation and the discovery/requirements process are pre-sales content for Cynbit's custom development; not covered by any Cynbit post."
+          },
+          {
+            "cluster_id": 39,
+            "label": "India vs Eastern Europe offshore developers",
+            "score_rank": 26,
+            "score": 39.96,
+            "status": "Gap",
+            "effort": 1.0,
+            "closest_client_similarity": 0.7372,
+            "competitor_self_mention": 0.048,
+            "notes": "Borderline: an offshore development guide for India fits an India-based agency selling dev services abroad; not covered by any Cynbit post (one source URL is unrelated)."
+          },
+          {
+            "cluster_id": 6,
+            "label": "AI in Indian Banking",
+            "score_rank": 29,
+            "score": 37.61,
+            "status": "Gap",
+            "effort": 1.0,
+            "closest_client_similarity": 0.7962,
+            "competitor_self_mention": 0.444,
+            "notes": "AI in Indian BFSI (KYC, decisioning) is a vertical reachable through Cynbit's LLM document automation; the document-extraction post covers only finance AP, not banking."
+          },
+          {
+            "cluster_id": 22,
+            "label": "AI data readiness",
+            "score_rank": 31,
+            "score": 37.36,
+            "status": "Gap",
+            "effort": 1.0,
+            "closest_client_similarity": 0.8126,
+            "competitor_self_mention": 0.556,
+            "notes": "An AI data-readiness checklist / why AI projects fail in production fits Cynbit's AI services; existing 'mistakes to avoid' sections in the trends and agents posts don't cover data readiness."
+          },
+          {
+            "cluster_id": 11,
+            "label": "approval workflow automation",
+            "score_rank": 38,
+            "score": 34.6,
+            "status": "Gap",
+            "effort": 1.0,
+            "closest_client_similarity": 0.795,
+            "competitor_self_mention": 0.444,
+            "notes": "Approval workflow automation (escalations, thresholds) fits Cynbit's automation services; 'Top Productivity Automation Ideas' covers expense processing but not approval workflows."
+          }
+        ],
+        "precision_by_effort": {
+          "effort_0_expand_existing": {
+            "n": 6,
+            "real": 3,
+            "precision": 0.5
+          },
+          "effort_1_new_page": {
+            "n": 25,
+            "real": 16,
+            "precision": 0.64
+          }
+        },
+        "mean_closest_client_similarity": {
+          "labelled_1": 0.816,
+          "labelled_0": 0.8069
+        },
+        "competitor_self_mention": {
+          "mean_labelled_1": 0.1985,
+          "mean_labelled_0": 0.2966,
+          "clusters_ge_0_3": {
+            "n": 8,
+            "real": 5,
+            "precision": 0.625
+          }
+        }
+      }
+    },
+    "figures": [
+      "topic_map.png",
+      "coverage_status.png",
+      "score_distribution.png"
+    ]
+  },
+  "runtime_seconds": {
+    "sectionize": 0.1,
+    "embed": 16.1,
+    "cluster": 5.48,
+    "label": 104.92,
+    "gaps_and_score": 0.13,
+    "briefs": 48.89,
+    "evaluate": 0.4,
+    "total": 176.02
+  },
+  "flags": {
+    "skip_crawl": true,
+    "no_llm": false
+  }
+}

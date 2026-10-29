@@ -189,7 +189,7 @@ def reason(row: pd.Series, client_name: str, n_competitors: int) -> str:
         f"{row['status']}: {row['competitor_sections']} competitor sections from "
         f"{row['competitors_covering']} of {n_competitors} competitors, {cover}. "
         f"{_level(row['relevance']).capitalize()} relevance to {client_name}'s services "
-        f"(closest: \"{row['closest_service'][:80]}\"). "
+        f"(closest service: \"{row['closest_service'].rstrip('.')}\"). "
         f"{row['intent'].capitalize()} intent. Effort: {effort}."
     )
 
