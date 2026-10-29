@@ -1,0 +1,7 @@
+Cynbit Technologies services (source: https://www.cynbit.in/services)
+
+AI automation suite: autonomous AI agents and cognitive automation that transform business operations through intelligent execution. Smart AI assistants that manage leads and coordination. LLM automation to automate manual data entry and document handling with AI. AI voice agents for voice-driven human-machine communication. AI stack integration, embedding intelligence into an existing SaaS stack.
+
+Custom IT services: scalable software development and cloud solutions. Full-stack development of scalable web and mobile platforms. Secure backend systems designed for high uptime. Cloud infrastructure deployment across AWS and Azure with zero-trust security. Legacy migration, modernizing monoliths into agile, distributed systems.
+
+Digital marketing: data-driven marketing and technical SEO engineering. Performance ads on Google and Meta focused on ROI and lead generation. Technical SEO and site infrastructure optimization. CRM automation that nurtures leads automatically. Funnel optimization with high-conversion landing pages driven by user behavior.

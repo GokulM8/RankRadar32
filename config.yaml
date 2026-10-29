@@ -1,0 +1,128 @@
+# GapLens configuration. All paths are relative to the repository root.
+
+project:
+  name: GapLens
+  random_seed: 42
+
+paths:
+  pages: data/raw/pages.jsonl
+  crawl_log: data/raw/crawl_log.jsonl
+  sections: data/processed/sections.parquet
+  embeddings: data/processed/embeddings.npy
+  embeddings_meta: data/processed/embeddings_meta.json
+  clusters: data/processed/clusters.parquet
+  cluster_labels: data/processed/cluster_labels.json
+  services_text: data/client_services.txt
+  labels_template: data/labels/gap_labels_template.csv
+  labels_filled: data/labels/gap_labels.csv
+  gaps: outputs/gaps.csv
+  briefs: outputs/briefs.json
+  metrics: outputs/metrics.json
+  topic_map: outputs/topic_map.parquet
+  figures: outputs/figures
+
+crawl:
+  user_agent: "GapLensBot/0.1 (content-gap research prototype; polite, robots.txt-aware)"
+  delay_seconds: 1.5
+  timeout_seconds: 20
+  max_pages_per_site: 60
+  # Path fragments that mark listing/taxonomy pages rather than posts.
+  exclude_patterns: ["/tag/", "/tags/", "/category/", "/categories/", "/author/", "/page/", "?page=", "#"]
+
+sites:
+  - name: Cynbit
+    role: client
+    listing_urls:
+      - https://www.cynbit.in/blog?page=1
+      - https://www.cynbit.in/blog?page=2
+      - https://www.cynbit.in/blog?page=3
+      - https://www.cynbit.in/blog?page=4
+      - https://www.cynbit.in/blog?page=5
+    post_url_pattern: '^https://(www\.)?cynbit\.in/blog/[^/?#]+/?$'
+
+  - name: Proeffico
+    role: competitor
+    listing_urls:
+      - https://proeffico.ai/blog/
+    post_url_pattern: '^https://(www\.)?proeffico\.ai/blog/[^/?#]+/?$'
+
+  - name: Canny Technologies
+    role: competitor
+    listing_urls:
+      - https://cannytechnology.com/blog
+    post_url_pattern: '^https://(www\.)?cannytechnology\.com/blog/[^/?#]+/?$'
+
+  - name: Automely
+    role: competitor
+    listing_urls:
+      - https://automely.ai/blogs
+    post_url_pattern: '^https://(www\.)?automely\.ai/blogs?/[^/?#]+/?$'
+
+sectionize:
+  min_words: 60
+  max_words: 350
+  # A paragraph repeated on at least this many pages of the same site is treated as boilerplate.
+  boilerplate_min_pages: 3
+
+embedding:
+  model: BAAI/bge-small-en-v1.5
+  fallback_model: sentence-transformers/all-MiniLM-L6-v2
+  batch_size: 32
+
+umap:
+  n_neighbors: 15
+  n_components: 10
+  min_dist: 0.0
+  metric: cosine
+  # Separate 2-D projection used only for plotting.
+  viz_min_dist: 0.1
+
+hdbscan:
+  min_cluster_size: 5
+  min_samples: 3
+  cluster_selection_method: eom
+
+labeling:
+  top_keywords: 6
+  representative_sections: 5
+
+gaps:
+  # Weak spot: client share below this while competitors have at least min_competitor_sections.
+  weak_share_threshold: 0.2
+  min_competitor_sections: 3
+
+scoring:
+  weights:
+    relevance: 0.40
+    competitor_strength: 0.25
+    intent: 0.20
+    effort: 0.15
+  # Client section at or above this cosine similarity to the centroid means "expand an existing page".
+  effort_similarity_threshold: 0.75
+  sensitivity_delta: 0.10
+  intent_scores:
+    transactional: 1.0
+    commercial: 0.7
+    informational: 0.4
+  intent_rules:
+    transactional: [pricing, price, cost, hire, quote, buy, demo, contact, agency, services, company, outsourcing, "near me"]
+    commercial: [best, top, vs, versus, comparison, compare, alternative, review, benefits, roi, case study, choose, platform, tool, tools, solution, solutions]
+
+briefs:
+  top_n: 10
+
+llm:
+  enabled: true
+  base_url: https://integrate.api.nvidia.com/v1
+  model: nvidia/llama-3.3-nemotron-super-49b-v1
+  api_key_env: NVIDIA_API_KEY
+  # First line of the system prompt; Nemotron Super uses it to turn reasoning traces off.
+  system_prefix: "detailed thinking off"
+  temperature: 0.2
+  max_tokens: 1500
+  max_retries: 5
+  backoff_base_seconds: 2.0
+  timeout_seconds: 90
+
+evaluation:
+  label_top_k: 25
