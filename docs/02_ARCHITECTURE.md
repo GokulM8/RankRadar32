@@ -31,7 +31,8 @@ Every stage writes its result to disk. This keeps stages independently re-runnab
 | `sectionize.py` | Split pages by headings, merge/split by length, remove repeated boilerplate. | `pages.jsonl` | `sections.parquet` | `pandas` |
 | `embed.py` | Encode sections into normalised vectors; cache. | `sections.parquet` | `embeddings.npy` | `sentence-transformers` |
 | `cluster.py` | UMAP reduction, HDBSCAN clustering, 2-D projection for plotting, cluster metrics. | Embeddings | `clusters.parquet`, metrics | `umap-learn`, `hdbscan`, `scikit-learn` |
-| `label.py` | Keywords per cluster; optional LLM topic name. | Clusters, sections | Cluster labels | `keybert`, `scikit-learn`, `openai` |
+| `label.py` | Keywords per cluster; optional LLM topic name. | Clusters, sections | Cluster labels | `keybert`, `scikit-learn` |
+| `llm.py` | OpenAI-compatible client for NVIDIA NIM: backoff, JSON parsing, token and latency stats. | Prompts | Parsed replies, call stats | `openai` |
 | `gaps.py` | Per-cluster coverage and status. | Clusters, sections | Coverage table | `pandas` |
 | `score.py` | Relevance, competitor strength, intent, effort; weighted score; reason; sensitivity check. | Coverage, embeddings, service text | `gaps.csv` | `numpy`, `pandas` |
 | `briefs.py` | Grounded briefs for top-N gaps with validation, retry and template fallback. | Top gaps, sections | `briefs.json` | `openai` (NIM endpoint) |
@@ -94,7 +95,8 @@ Every stage writes its result to disk. This keeps stages independently re-runnab
 | `competitor_sections` | int | |
 | `competitors_covering` | int | Distinct competitor sites |
 | `client_share` | float | 0–1 |
-| `relevance` | float | 0–1, centroid vs service text |
+| `relevance` | float | 0–1, centroid vs service text (min-max scaled) |
+| `relevance_raw` | float | Cosine similarity before scaling |
 | `competitor_strength` | float | 0–1 |
 | `intent` | str | `informational`, `commercial`, `transactional` |
 | `intent_score` | float | 0–1 |
@@ -103,7 +105,9 @@ Every stage writes its result to disk. This keeps stages independently re-runnab
 | `reason` | str | Plain-language explanation of the score |
 | `closest_client_url` | str | Nearest client page (internal link candidate) |
 | `closest_client_similarity` | float | Cosine similarity |
+| `closest_service` | str | Service sentence closest to the topic |
 | `competitor_urls` | str | Pipe-separated competitor URLs in the cluster |
+| `sites` | str | Section count per site, e.g. `Proeffico: 14, Cynbit: 1` |
 | `sample_excerpt` | str | Most representative section excerpt |
 
 ### 3.5 `outputs/briefs.json` (list of objects)
@@ -120,12 +124,20 @@ Every stage writes its result to disk. This keeps stages independently re-runnab
 | `competitor_reference_urls` | list[str] |
 | `internal_link_from` | str |
 | `opportunity_score` | float |
+| `status` | str (`Gap` or `Weak spot`) |
 | `source` | str (`llm` or `template`) |
 | `model` | str or null |
+| `llm_attempts` | int (0 without an LLM) |
+| `validation_failures` | list[str] (why earlier attempts were rejected) |
 
 ### 3.6 `outputs/metrics.json`
 
-Cluster metrics (silhouette, noise ratio, cluster count, size distribution), per-site page and section counts, sensitivity check, precision results (once labels exist), LLM call stats and runtime per stage.
+Cluster metrics (silhouette, noise ratio, cluster count, size distribution), per-site page and section counts, sensitivity check, precision results with label provenance, ablation and error analysis (once labels exist), LLM call stats and runtime per stage.
+
+### 3.7 Other files
+
+- `outputs/topic_map.parquet`: one row per section with site, cluster, 2-D coordinates, label, status, score and a 40-word excerpt; read by the dashboard.
+- `data/labels/gap_labels_template.csv`: topics to label (`is_real_gap` blank). `data/labels/gap_labels_filled.csv`: the filled labels used for evaluation, with `confidence` and `label_source`.
 
 ## 4. PoC vs production architecture
 
@@ -182,3 +194,5 @@ The main decisions are recorded as short ADRs in [`DECISIONS.md`](DECISIONS.md):
 4. A transparent weighted score instead of a trained model.
 5. LLM optional, with a keyword fallback.
 6. Briefs for humans, not generated articles.
+7. Nemotron 3.5 Super, because the planned model was delisted.
+8. Opportunity scores do not depend on the LLM.
