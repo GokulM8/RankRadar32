@@ -2,6 +2,8 @@
 
 > **RankRadar: spot the content gaps between you and your competitors.**
 
+**Live demo:** https://rank-radar-8868.streamlit.app/
+
 RankRadar prioritises content opportunities; it does not predict or track search rankings.
 
 RankRadar is an AI content-gap and opportunity engine for Cynbit's SEO services. It politely crawls a client's blog and its competitors' blogs, splits every post into heading-level sections, embeds and clusters them by meaning, finds topics competitors cover but the client doesn't, ranks those gaps with a transparent opportunity score and writes grounded content briefs for human writers. It never generates or publishes articles.
@@ -10,7 +12,6 @@ I built it as a take-home assessment for the AI/ML Engineer Intern role at Cynbi
 
 ![RankRadar dashboard overview](docs/img/dashboard_overview.png)
 
-**Live demo:** _add the Streamlit Community Cloud URL after deploying (steps below)._
 
 ## What it found
 
@@ -44,8 +45,8 @@ Ranks 1, 3, 6 and 9 were labelled "already covered" by existing Cynbit posts.
 Requires Python 3.10+ and works on CPU only. I developed and tested it on Python 3.13.
 
 ```bash
-git clone <repo-url> rankradar-content-intelligence
-cd rankradar-content-intelligence
+git clone https://github.com/GokulM8/Rank-Radar.git
+cd Rank-Radar
 python -m venv .venv
 source .venv/bin/activate            # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
