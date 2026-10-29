@@ -164,3 +164,29 @@ def test_brief_falls_back_to_template_after_two_failures():
     clusters = pd.DataFrame(columns=["section_id", "cluster_id"])
     b = build_brief(_gap_row(), sections, clusters, {}, "Cynbit", "services", FakeLLM(["{}", "{\"topic\": 1}"]))
     assert b["source"] == "template" and b["model"] is None
+
+
+def test_copy_check_flags_verbatim_competitor_wording():
+    from gaplens.briefs import copied_phrases
+
+    source = "What are the processes that consume disproportionate manual effort every cycle in your team?"
+    brief = {"topic": "Ops", "why_it_matters": "x", "suggested_title": "t", "outline": [],
+             "questions_to_answer": ["What are the processes that consume disproportionate manual effort every cycle?"]}
+    assert copied_phrases(brief, source)
+    brief["questions_to_answer"] = ["Which manual processes take the most time each month?"]
+    assert copied_phrases(brief, source) == []
+
+
+def test_brief_with_copied_text_retries_then_falls_back():
+    from gaplens.briefs import build_brief
+
+    sections = pd.DataFrame(
+        {"section_id": ["s1"], "role": ["competitor"], "url": ["https://a.test/1"], "heading": ["H"],
+         "text": ["Approval workflows route purchase orders through thresholds escalations and audit trails for finance teams"]}
+    )
+    clusters = pd.DataFrame({"section_id": ["s1"], "cluster_id": [7]})
+    copied = ('{"topic": "Approvals", "why_it_matters": "x", "target_intent": "commercial", "suggested_title": "t", '
+              '"outline": [{"h2": "a", "h3": []}, {"h2": "b", "h3": []}], '
+              '"questions_to_answer": ["Approval workflows route purchase orders through thresholds escalations and audit trails?"]}')
+    b = build_brief(_gap_row(), sections, clusters, {}, "Cynbit", "services", FakeLLM([copied, copied]))
+    assert b["source"] == "template"

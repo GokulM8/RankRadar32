@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 from typing import Any
 
 import pandas as pd
@@ -48,6 +49,28 @@ Return a JSON object with exactly these keys:
   "questions_to_answer": ["question the article should answer", "..."]
 }}
 The outline should have 4-7 H2 items, each with 0-3 H3 items. Give 4-8 questions."""
+
+
+COPY_NGRAM = 8  # this many consecutive words shared with the excerpts counts as copying
+
+
+def _words(text: str) -> list[str]:
+    return re.findall(r"\w+", text.lower())
+
+
+def copied_phrases(data: dict[str, Any], source_text: str, n: int = COPY_NGRAM) -> list[str]:
+    """Word n-grams in the brief's text fields that also appear verbatim in the source excerpts."""
+    parts = [str(data.get(k, "")) for k in ("topic", "why_it_matters", "suggested_title")]
+    for o in data.get("outline") or []:
+        if isinstance(o, dict):
+            parts += [str(o.get("h2", ""))] + [str(h) for h in o.get("h3", []) or []]
+    parts += [str(q) for q in data.get("questions_to_answer") or []]
+    src = " ".join(_words(source_text))
+    hits: list[str] = []
+    for part in parts:  # n-grams within one field only
+        w = _words(part)
+        hits += [" ".join(w[i : i + n]) for i in range(len(w) - n + 1) if " ".join(w[i : i + n]) in src]
+    return list(dict.fromkeys(hits))
 
 
 def validate_brief(data: Any) -> list[str]:
@@ -147,7 +170,7 @@ def build_brief(
     """One brief: LLM fields (validated, one retry) or template fields, plus code-filled fields."""
     from gaplens.llm import parse_json
 
-    body, source = None, "template"
+    body, source, attempts, failures = None, "template", 0, []
     if llm_client is not None:
         user = USER_TEMPLATE.format(
             client=client,
@@ -157,18 +180,25 @@ def build_brief(
             status=row["status"],
             reason=row["reason"],
             intent=row["intent"],
-            excerpts=_excerpts(row, sections, clusters, labels),
+            excerpts=_excerpts(row, sections, clusters, labels),  # same text the copy check uses
         )
+        excerpts = _excerpts(row, sections, clusters, labels)
         for attempt in range(2):
+            attempts += 1
             try:
                 raw = llm_client.chat(SYSTEM_PROMPT, user, purpose=f"brief:{row['cluster_id']}")
                 data = parse_json(raw)
                 errors = validate_brief(data)
+                if not errors:
+                    copied = copied_phrases(data, excerpts)
+                    if copied:
+                        errors = [f"copied competitor wording, rephrase in your own words: {copied[:3]}"]
             except Exception as exc:
                 data, errors = None, [str(exc)]
             if not errors:
                 body, source = data, "llm"
                 break
+            failures.append("; ".join(errors)[:200])
             log.warning("Brief for cluster %s invalid (attempt %d): %s", row["cluster_id"], attempt + 1, errors)
             user += "\n\nYour previous reply was invalid: " + "; ".join(errors) + ". Return only the JSON object."
 
@@ -190,6 +220,8 @@ def build_brief(
         "status": row["status"],
         "source": source,
         "model": llm_client.model if source == "llm" else None,
+        "llm_attempts": attempts,
+        "validation_failures": failures,
     }
 
 
