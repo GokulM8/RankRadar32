@@ -68,7 +68,7 @@ Each record follows: context → decision → alternatives → consequences.
 
 **Context.** It would be technically easy to generate full articles for each gap. Google's spam policies name scaled content abuse (producing many pages mainly to manipulate rankings, including with automation) as a violation, and copying competitor content creates copyright risk.
 
-**Decision.** GapLens outputs briefs only: topic, why it matters, intent, title, outline, questions, references and an internal link. The LLM sees only short excerpts as grounding and is told not to copy text, invent statistics or promise rankings.
+**Decision.** RankRadar outputs briefs only: topic, why it matters, intent, title, outline, questions, references and an internal link. The LLM sees only short excerpts as grounding and is told not to copy text, invent statistics or promise rankings.
 
 **Alternatives.** Full draft generation; auto-publishing to a CMS.
 
@@ -95,3 +95,15 @@ Each record follows: context → decision → alternatives → consequences.
 **Decision.** Intent is classified from keywords, section headings and page titles only. The LLM affects topic names and brief wording, never scores or ranks.
 
 **Consequences.** `--no-llm` and LLM runs produce the same `gaps.csv` scores and order, so precision results hold in both modes.
+
+---
+
+## ADR-009: Rename the project to RankRadar
+
+**Context.** The project was built and evaluated under a previous working name (recorded in the git history before the rename commit). I chose a final name for the submission.
+
+**Decision.** The project, Python package (`rankradar`), CLI (`python -m rankradar.pipeline`), crawler User-Agent (`RankRadarBot/0.1`), dashboard and documents are now called RankRadar, with the tagline "RankRadar: spot the content gaps between you and your competitors." Because the name could suggest rank tracking, the README and the opportunity report state plainly that RankRadar prioritises content opportunities and does not predict or track search rankings (see also risk 6 in `07_RISKS_AND_ETHICS.md`).
+
+**Alternatives.** Keep the working name (more literal, but not the name I wanted to present).
+
+**Consequences.** This is a rename only: no logic, configuration values (other than the User-Agent string) or weights changed. A `--no-llm` run after the rename reproduces the pre-rename outputs exactly, apart from names. Commits before the rename use the old name.

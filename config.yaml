@@ -1,7 +1,7 @@
-# GapLens configuration. All paths are relative to the repository root.
+# RankRadar configuration. All paths are relative to the repository root.
 
 project:
-  name: GapLens
+  name: RankRadar
   random_seed: 42
 
 paths:
@@ -23,7 +23,7 @@ paths:
   figures: outputs/figures
 
 crawl:
-  user_agent: "GapLensBot/0.1 (content-gap research prototype; polite, robots.txt-aware)"
+  user_agent: "RankRadarBot/0.1 (content-gap research prototype; polite, robots.txt-aware)"
   delay_seconds: 1.5
   timeout_seconds: 20
   max_pages_per_site: 60

@@ -25,7 +25,7 @@ I did not try to work around this. The pipeline runs with two competitors, and e
 | Rule | Implementation |
 |---|---|
 | robots.txt | Fetched with my own User-Agent and parsed with `urllib.robotparser`. Following RFC 9309, a 404 means no restrictions; 401, 403, a 5xx or an unreachable file means the site is treated as disallowed. Every listing and post URL is checked with `can_fetch`. |
-| User-Agent | `GapLensBot/0.1 (content-gap research prototype; polite, robots.txt-aware)` |
+| User-Agent | `RankRadarBot/0.1 (content-gap research prototype; polite, robots.txt-aware)` |
 | Delay | 1.5 s between requests per site, raised to the robots.txt `Crawl-delay` if that is higher (Cynbit's robots.txt sets 1 s). |
 | Cap | 60 posts per site (no site reached it). |
 | Scope | Public blog posts only. Listing, tag, category, author and paginated URLs are excluded by pattern. |
@@ -89,7 +89,7 @@ The full data contracts are in `02_ARCHITECTURE.md` §3. In short:
 
 The PoC only knows what competitors publish. A production version would add:
 
-- **Google Search Console** (per client, with their consent): queries, impressions, clicks and average position per page. This lets GapLens tell "topic Cynbit has never written about" apart from "topic Cynbit has a page for that gets impressions but few clicks", and it is the outcome data for a supervised model (see `04` and `08`).
+- **Google Search Console** (per client, with their consent): queries, impressions, clicks and average position per page. This lets RankRadar tell "topic Cynbit has never written about" apart from "topic Cynbit has a page for that gets impressions but few clicks", and it is the outcome data for a supervised model (see `04` and `08`).
 - **A SERP / keyword API** (for example DataForSEO): search volume, keyword difficulty and the pages currently ranking for each cluster's keywords. This replaces competitor coverage as the main demand signal.
 - **Scheduled re-crawls** (weekly or monthly) with HTTP caching (`ETag`/`Last-Modified`) to track new competitor content and gaps that close over time.
 - **Storage** in PostgreSQL (pages, sections, clusters, gaps, briefs, outcomes) and Pinecone (section vectors, one namespace per client), as described in `02_ARCHITECTURE.md` §4.

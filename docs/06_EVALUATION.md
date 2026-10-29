@@ -4,14 +4,14 @@ All numbers are from `outputs/metrics.json` (run 2026-10-29T17:35:44Z) unless ma
 
 ## Result
 
-**The GapLens opportunity score did not beat a naive baseline.** On 31 labelled topics:
+**The RankRadar opportunity score did not beat a naive baseline.** On 31 labelled topics:
 
 | Ranking | Precision@10 | Precision@25 |
 |---|---|---|
-| GapLens opportunity score | **0.60** | **0.60** |
+| RankRadar opportunity score | **0.60** | **0.60** |
 | Baseline: rank by competitor section count only | **0.80** | **0.64** |
 
-The labels come from one AI-assisted labelling pass that could see the score column (§3), which, if anything, would bias them toward GapLens's ranking, and the baseline still won. Section 5 explains the root causes, and `08_EXECUTION_PLAN.md` sets out the v2 plan that addresses them.
+The labels come from one AI-assisted labelling pass that could see the score column (§3), which, if anything, would bias them toward RankRadar's ranking, and the baseline still won. Section 5 explains the root causes, and `08_EXECUTION_PLAN.md` sets out the v2 plan that addresses them.
 
 ## 1. What is evaluated
 
@@ -41,7 +41,7 @@ The clusters separate well in the reduced space but only weakly in the original 
 **What was done.** The 31 topics in `data/labels/gap_labels_template.csv` were labelled 1 ("a real gap Cynbit should plausibly write about, given its services") or 0 ("not a real gap": already covered by Cynbit, competitor self-promotion, outside Cynbit's services, or not a coherent topic). The 31 rows are the top 25 by opportunity score plus the extra topics in the baseline's top 25, so both rankings can be scored on the same labels.
 
 - **One AI-assisted labelling pass with a fixed rubric.** A separate Claude Code session, which did not share this project's context, labelled every row against a written rubric (`label_source = ai_assisted_rubric_v1`). For each row it recorded a label, a one-line reason (`notes`) and a confidence level.
-- **Not blind to scores.** The CSV the labeller worked from contained the `score` column (and `status`). The labels could therefore be biased toward GapLens's own ranking, which would make GapLens look *better* than it is. Even so, the baseline won.
+- **Not blind to scores.** The CSV the labeller worked from contained the `score` column (and `status`). The labels could therefore be biased toward RankRadar's own ranking, which would make RankRadar look *better* than it is. Even so, the baseline won.
 - **0 human overrides.** I did not change any labels. All 31 are the rubric labels as produced.
 - The filled file is `data/labels/gap_labels_filled.csv`.
 
@@ -65,14 +65,14 @@ The clusters separate well in the reduced space but only weakly in the original 
 
 | Ranking | Precision@10 | Precision@25 |
 |---|---|---|
-| GapLens opportunity score | 0.60 (6 of 10) | 0.60 (15 of 25) |
+| RankRadar opportunity score | 0.60 (6 of 10) | 0.60 (15 of 25) |
 | Baseline: competitor section count only | 0.80 (8 of 10) | 0.64 (16 of 25) |
 
 **Robustness check, excluding the 8 low-confidence labels:**
 
 | Ranking | Precision@10 | Precision@25 |
 |---|---|---|
-| GapLens opportunity score | 0.5556 (5 of 9 labelled) | 0.5263 (10 of 19 labelled) |
+| RankRadar opportunity score | 0.5556 (5 of 9 labelled) | 0.5263 (10 of 19 labelled) |
 | Baseline | 0.7778 (7 of 9 labelled) | 0.60 (12 of 20 labelled) |
 
 The baseline stays ahead with or without the uncertain labels.
@@ -117,7 +117,7 @@ Same subject, two clusters. Because Proeffico's 17 sections landed in their own 
 
 **Root cause 3: the semantic coverage check only affected effort, not gap status.** The pipeline does measure how close Cynbit's nearest section is to each topic, but it uses that only for the *effort* component, where closeness *raises* the score ("cheap to expand"). It never changes a topic's status from Gap to Covered. Three of the four top-10 false positives were flagged "expand existing page", the strongest available signal that Cynbit already has the content. As a coverage detector it also barely separates the classes: mean nearest-Cynbit-section similarity is 0.816 for topics labelled 1 and 0.8069 for topics labelled 0, and precision is 0.50 for "expand existing page" topics (3 of 6) vs 0.64 for "new page" topics (16 of 25).
 
-**What about a brand penalty?** GapLens has none. As a proxy I measured the share of a cluster's competitor sections that name their own company. It is higher on average for topics labelled 0 (0.2966) than for topics labelled 1 (0.1985), but it would be a poor filter: 5 of the 8 clusters at or above 0.3 are real gaps. The two clearest self-promotion clusters ("AI software development services", rank 11, and "AI development company India", rank 17, both labelled 0) are already outside the top 10.
+**What about a brand penalty?** RankRadar has none. As a proxy I measured the share of a cluster's competitor sections that name their own company. It is higher on average for topics labelled 0 (0.2966) than for topics labelled 1 (0.1985), but it would be a poor filter: 5 of the 8 clusters at or above 0.3 are real gaps. The two clearest self-promotion clusters ("AI software development services", rank 11, and "AI development company India", rank 17, both labelled 0) are already outside the top 10.
 
 ### Topics labelled 1 that ranked low (rank > 15)
 
@@ -167,7 +167,7 @@ The v2 plan is in `08_EXECUTION_PLAN.md`. In short: make coverage a hard gate be
 
 Offline labels can only say whether a topic *looks* like a worthwhile gap. Whether it is worthwhile is measured in search data. The test I would run with a pilot client:
 
-- **Design.** Take the client's GapLens ranking. Publish articles from briefs for the top 8–10 topics (treatment) and for 4–5 low-scored but in-scope topics (control), written by the same writers to the same standard.
+- **Design.** Take the client's RankRadar ranking. Publish articles from briefs for the top 8–10 topics (treatment) and for 4–5 low-scored but in-scope topics (control), written by the same writers to the same standard.
 - **Measure.** Google Search Console impressions, clicks, CTR and average position per new URL, weekly for 8–12 weeks. Use relative growth to account for different launch dates.
 - **Success.** Treatment pages gain more impressions and clicks than control pages by week 12, and the opportunity score correlates positively with outcomes (Spearman rank correlation).
 - **Use the data.** These outcomes become the labels for the supervised opportunity model in `04` §8, validated with client-grouped cross-validation.

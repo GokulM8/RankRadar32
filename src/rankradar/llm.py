@@ -8,7 +8,7 @@ import re
 import time
 from typing import Any
 
-from gaplens.config import get_api_key
+from rankradar.config import get_api_key
 
 log = logging.getLogger(__name__)
 

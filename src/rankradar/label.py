@@ -16,7 +16,7 @@ import numpy as np
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer, ENGLISH_STOP_WORDS
 
-from gaplens.sectionize import embedding_text
+from rankradar.sectionize import embedding_text
 
 log = logging.getLogger(__name__)
 
@@ -88,7 +88,7 @@ def keywords_for_clusters(docs: dict[int, str], embed_model, top_k: int, extra_s
 
 def llm_topic_name(client, excerpts: list[str], keywords: list[str], cluster_id: int) -> str | None:
     """Ask the LLM for a short topic name; None on any failure."""
-    from gaplens.llm import parse_json
+    from rankradar.llm import parse_json
 
     user = (
         f"Keywords: {', '.join(keywords)}\n\nExcerpts:\n"
@@ -111,7 +111,7 @@ def run_label(
     llm_client=None,
 ) -> dict[int, dict[str, Any]]:
     """Label every non-noise cluster; write cluster_labels.json and return the mapping."""
-    from gaplens.embed import load_model
+    from rankradar.embed import load_model
 
     lc = cfg["labeling"]
     labels = clusters["cluster_id"].to_numpy()

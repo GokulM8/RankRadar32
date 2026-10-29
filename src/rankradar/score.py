@@ -16,7 +16,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from gaplens.gaps import GAP, WEAK
+from rankradar.gaps import GAP, WEAK
 
 COMPONENTS = ("relevance", "competitor_strength", "intent", "effort")
 
@@ -230,7 +230,7 @@ def sensitivity(df: pd.DataFrame, weights: dict[str, float], delta: float, top_k
 
 def run_score(cfg: dict[str, Any], scored: pd.DataFrame) -> tuple[pd.DataFrame, dict[str, Any]]:
     """Compute scores and reasons, sort, write gaps.csv; return (table, sensitivity results)."""
-    from gaplens.config import client_site
+    from rankradar.config import client_site
 
     weights = cfg["scoring"]["weights"]
     n_comp = scored.attrs.get("n_competitors") or sum(1 for s in cfg["sites"] if s["role"] == "competitor")

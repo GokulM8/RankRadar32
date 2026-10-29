@@ -20,5 +20,5 @@ python-dotenv==1.2.4
 tqdm==4.70.1
 openai==3.41.0
 pytest==9.2.0
-# Installs the gaplens package from src/
+# Installs the rankradar package from src/
 -e .

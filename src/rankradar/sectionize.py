@@ -166,7 +166,7 @@ def sectionize(pages: list[dict[str, Any]], min_words: int, max_words: int, boil
 
 def run_sectionize(cfg: dict[str, Any]) -> pd.DataFrame:
     """Read pages.jsonl, write sections.parquet."""
-    from gaplens.crawl import load_pages
+    from rankradar.crawl import load_pages
 
     sc = cfg["sectionize"]
     df = sectionize(load_pages(cfg["paths"]["pages"]), sc["min_words"], sc["max_words"], sc["boilerplate_min_pages"])

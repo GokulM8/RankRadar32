@@ -3,12 +3,12 @@
 import pandas as pd
 import pytest
 
-from gaplens.briefs import template_brief, validate_brief
-from gaplens.config import load_config
-from gaplens.gaps import classify, coverage
-from gaplens.llm import parse_json
-from gaplens.score import classify_intent, opportunity_score, perturbed_weights
-from gaplens.sectionize import sectionize_page
+from rankradar.briefs import template_brief, validate_brief
+from rankradar.config import load_config
+from rankradar.gaps import classify, coverage
+from rankradar.llm import parse_json
+from rankradar.score import classify_intent, opportunity_score, perturbed_weights
+from rankradar.sectionize import sectionize_page
 
 WEIGHTS = {"relevance": 0.4, "competitor_strength": 0.25, "intent": 0.2, "effort": 0.15}
 
@@ -113,7 +113,7 @@ def test_template_brief_is_valid():
 
 
 def test_inline_markdown_recovery_leaves_normal_headings_alone():
-    from gaplens.crawl import recover_inline_markdown
+    from rankradar.crawl import recover_inline_markdown
 
     normal = "Intro text.\n\n## How to choose a vendor\n\nBody text here."
     assert recover_inline_markdown(normal) == normal
@@ -145,7 +145,7 @@ def _gap_row():
 
 
 def test_brief_retries_once_then_uses_llm_output():
-    from gaplens.briefs import build_brief
+    from rankradar.briefs import build_brief
 
     good = ('{"topic": "Approval automation", "why_it_matters": "x", "target_intent": "commercial", '
             '"suggested_title": "t", "outline": [{"h2": "a", "h3": []}, {"h2": "b", "h3": ["c"]}], '
@@ -158,7 +158,7 @@ def test_brief_retries_once_then_uses_llm_output():
 
 
 def test_brief_falls_back_to_template_after_two_failures():
-    from gaplens.briefs import build_brief
+    from rankradar.briefs import build_brief
 
     sections = pd.DataFrame(columns=["section_id", "role", "url", "heading", "text"])
     clusters = pd.DataFrame(columns=["section_id", "cluster_id"])
@@ -167,7 +167,7 @@ def test_brief_falls_back_to_template_after_two_failures():
 
 
 def test_copy_check_flags_verbatim_competitor_wording():
-    from gaplens.briefs import copied_phrases
+    from rankradar.briefs import copied_phrases
 
     source = "What are the processes that consume disproportionate manual effort every cycle in your team?"
     brief = {"topic": "Ops", "why_it_matters": "x", "suggested_title": "t", "outline": [],
@@ -178,7 +178,7 @@ def test_copy_check_flags_verbatim_competitor_wording():
 
 
 def test_brief_with_copied_text_retries_then_falls_back():
-    from gaplens.briefs import build_brief
+    from rankradar.briefs import build_brief
 
     sections = pd.DataFrame(
         {"section_id": ["s1"], "role": ["competitor"], "url": ["https://a.test/1"], "heading": ["H"],

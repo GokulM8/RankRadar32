@@ -1,4 +1,4 @@
-# 02 — Architecture: GapLens
+# 02 — Architecture: RankRadar
 
 ## 1. Pipeline overview (PoC)
 
@@ -196,3 +196,4 @@ The main decisions are recorded as short ADRs in [`DECISIONS.md`](DECISIONS.md):
 6. Briefs for humans, not generated articles.
 7. Nemotron 3.5 Super, because the planned model was delisted.
 8. Opportunity scores do not depend on the LLM.
+9. The project is named RankRadar (renamed from its working name).

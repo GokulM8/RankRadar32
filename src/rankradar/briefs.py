@@ -168,7 +168,7 @@ def build_brief(
     llm_client=None,
 ) -> dict[str, Any]:
     """One brief: LLM fields (validated, one retry) or template fields, plus code-filled fields."""
-    from gaplens.llm import parse_json
+    from rankradar.llm import parse_json
 
     body, source, attempts, failures = None, "template", 0, []
     if llm_client is not None:
@@ -234,7 +234,7 @@ def run_briefs(
     llm_client=None,
 ) -> list[dict[str, Any]]:
     """Generate briefs for the top-N scored gaps and write briefs.json."""
-    from gaplens.config import client_site
+    from rankradar.config import client_site
 
     client = client_site(cfg)
     services = " ".join(open(cfg["paths"]["services_text"], encoding="utf-8").read().split())[:900]

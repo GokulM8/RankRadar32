@@ -1,4 +1,4 @@
-"""Configuration loading for GapLens."""
+"""Configuration loading for RankRadar."""
 
 from __future__ import annotations
 

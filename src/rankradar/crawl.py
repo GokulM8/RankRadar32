@@ -76,9 +76,9 @@ def load_robots(session: PoliteSession, base_url: str) -> RobotFileParser:
     except requests.RequestException as exc:
         log.warning("robots.txt unreachable for %s (%s); treating site as disallowed", parts.netloc, exc)
         rp.disallow_all = True
-        rp.gaplens_note = f"robots.txt unreachable ({type(exc).__name__}); treated as full disallow per RFC 9309"
+        rp.rankradar_note = f"robots.txt unreachable ({type(exc).__name__}); treated as full disallow per RFC 9309"
         return rp
-    rp.gaplens_note = f"robots.txt HTTP {resp.status_code}"
+    rp.rankradar_note = f"robots.txt HTTP {resp.status_code}"
     if resp.status_code in (401, 403) or resp.status_code >= 500:
         rp.disallow_all = True
     elif resp.status_code >= 400:
@@ -235,7 +235,7 @@ def crawl_site(site: dict[str, Any], crawl_cfg: dict[str, Any], log_event, html_
         session.delay = max(session.delay, float(robots_delay))
 
     if not rp.can_fetch(session.user_agent, site["listing_urls"][0]):
-        note = getattr(rp, "gaplens_note", "")
+        note = getattr(rp, "rankradar_note", "")
         log_event(site["listing_urls"][0], "site_skipped_robots", f"{note}; crawling not permitted for {session.user_agent!r}")
         log.warning("Skipping %s: %s", site["name"], note)
         return
@@ -328,7 +328,7 @@ def load_pages(path: Path) -> list[dict[str, Any]]:
 
 
 if __name__ == "__main__":
-    from gaplens.config import load_config
+    from rankradar.config import load_config
 
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
     counts = run_crawl(load_config())

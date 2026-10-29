@@ -1,10 +1,10 @@
-# Technical Approach Report: GapLens
+# Technical Approach Report: RankRadar
 
 *Deliverable 3, AI/ML Engineer Intern assessment. A condensed version of `docs/02`–`docs/08`; follow the links for detail.*
 
-## 1. What GapLens does
+## 1. What RankRadar does
 
-GapLens takes a client website and competitor websites, crawls their public blog posts, groups the content into topics by meaning, finds topics competitors cover that the client does not, ranks them with a transparent opportunity score and writes grounded content briefs for human writers. The demo runs on Cynbit's own blog against Proeffico and Canny Technologies.
+RankRadar takes a client website and competitor websites, crawls their public blog posts, groups the content into topics by meaning, finds topics competitors cover that the client does not, ranks them with a transparent opportunity score and writes grounded content briefs for human writers. The demo runs on Cynbit's own blog against Proeffico and Canny Technologies.
 
 ## 2. Architecture
 
@@ -50,7 +50,7 @@ Details: [`docs/03_DATA_PIPELINE.md`](../docs/03_DATA_PIPELINE.md).
 | Topic names, briefs | `nvidia/nemotron-3.5-super-vl-120b-a12b` via NIM, reasoning off | The planned 49B Super model is delisted; this was the closest working Super model | Nemotron 3 Ultra (larger and slower) |
 | Ranking | Transparent weighted score | No outcome labels yet; explainable | Supervised model (planned once outcomes exist) |
 
-Decision records: [`docs/DECISIONS.md`](../docs/DECISIONS.md) (ADR-001 to ADR-008).
+Decision records: [`docs/DECISIONS.md`](../docs/DECISIONS.md) (ADR-001 to ADR-009).
 
 **Clustering results:** 50 clusters, noise ratio 0.16, median cluster size 10. Silhouette is 0.6012 in UMAP space and 0.1325 on the original embeddings (cosine). Clusters separate clearly after reduction, but only weakly in the raw space.
 
@@ -80,13 +80,13 @@ Details: [`docs/04_MODELING_AND_SCORING.md`](../docs/04_MODELING_AND_SCORING.md)
 
 | Ranking (31 labelled topics) | Precision@10 | Precision@25 |
 |---|---|---|
-| GapLens opportunity score | 0.60 | 0.60 |
+| RankRadar opportunity score | 0.60 | 0.60 |
 | Baseline: competitor section count | 0.80 | 0.64 |
 
 **Labels.**
 
 - **How they were made:** one AI-assisted labelling pass with a fixed rubric, by a single labeller, on 31 rows, with 0 human overrides.
-- **The score column was visible to the labeller.** Any bias would therefore favour GapLens's ranking, and the baseline still won.
+- **The score column was visible to the labeller.** Any bias would therefore favour RankRadar's ranking, and the baseline still won.
 - **The sample is small**, and there is no traffic data.
 
 **Root causes** ([`docs/06_EVALUATION.md`](../docs/06_EVALUATION.md) §5):
@@ -135,16 +135,16 @@ Details: [`docs/08_EXECUTION_PLAN.md`](../docs/08_EXECUTION_PLAN.md).
 ## 10. How to run the PoC
 
 ```bash
-git clone <repo-url> gaplens-content-intelligence
-cd gaplens-content-intelligence
+git clone <repo-url> rankradar-content-intelligence
+cd rankradar-content-intelligence
 python -m venv .venv && source .venv/bin/activate      # Python 3.10+
 pip install -r requirements.txt
 cp .env.example .env            # optional: add NVIDIA_API_KEY for LLM labels and briefs
 
-python -m gaplens.pipeline --config config.yaml              # full run, including the crawl
-python -m gaplens.pipeline --config config.yaml --skip-crawl --no-llm   # re-run on cached data, no API key
+python -m rankradar.pipeline --config config.yaml              # full run, including the crawl
+python -m rankradar.pipeline --config config.yaml --skip-crawl --no-llm   # re-run on cached data, no API key
 streamlit run app/streamlit_app.py                           # dashboard over outputs/
 pytest -q                                                    # tests
 ```
 
-The repository ships the outputs of the final run, so the dashboard works immediately after cloning. `notebooks/gaplens_walkthrough.ipynb` is committed with its outputs, so it can be read straight away; re-executing it needs one pipeline run first, because crawled text is not committed.
+The repository ships the outputs of the final run, so the dashboard works immediately after cloning. `notebooks/rankradar_walkthrough.ipynb` is committed with its outputs, so it can be read straight away; re-executing it needs one pipeline run first, because crawled text is not committed.

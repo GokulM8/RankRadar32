@@ -1,6 +1,6 @@
-"""Run the full GapLens pipeline.
+"""Run the full RankRadar pipeline.
 
-    python -m gaplens.pipeline --config config.yaml [--skip-crawl] [--no-llm]
+    python -m rankradar.pipeline --config config.yaml [--skip-crawl] [--no-llm]
 """
 
 from __future__ import annotations
@@ -17,11 +17,11 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from gaplens import briefs, cluster, crawl, embed, evaluate, gaps, label, score, sectionize
-from gaplens.config import load_config
-from gaplens.llm import LLMClient, llm_available
+from rankradar import briefs, cluster, crawl, embed, evaluate, gaps, label, score, sectionize
+from rankradar.config import load_config
+from rankradar.llm import LLMClient, llm_available
 
-log = logging.getLogger("gaplens")
+log = logging.getLogger("rankradar")
 
 
 @contextmanager
@@ -139,7 +139,7 @@ def run(config_path: str, skip_crawl: bool = False, no_llm: bool = False) -> dic
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Run the GapLens pipeline.")
+    parser = argparse.ArgumentParser(description="Run the RankRadar pipeline.")
     parser.add_argument("--config", default="config.yaml")
     parser.add_argument("--skip-crawl", action="store_true", help="reuse data/raw/pages.jsonl")
     parser.add_argument("--no-llm", action="store_true", help="keyword labels and template briefs only")

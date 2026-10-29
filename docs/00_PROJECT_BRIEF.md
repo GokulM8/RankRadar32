@@ -1,6 +1,6 @@
-# 00 — Project Brief: Cynbit GapLens
+# 00 — Project Brief: RankRadar
 
-> **See the content your competitors cover and you don't.**
+> **RankRadar: spot the content gaps between you and your competitors.**
 
 ## 1. Problem
 
@@ -19,7 +19,7 @@ Done by hand, this audit takes a strategist several days. They open competitor b
 
 ## 3. The opportunity
 
-GapLens turns the content gap audit into a repeatable, data-backed pipeline:
+RankRadar turns the content gap audit into a repeatable, data-backed pipeline:
 
 1. Crawl the client's blog and 2–3 competitor blogs (public pages only).
 2. Split every page into heading-level sections.
@@ -40,7 +40,7 @@ Why this matters for Cynbit specifically:
 
 - Open-source sentence embedding models are now good enough, and small enough, to run topic clustering on a laptop CPU in minutes.
 - Hosted LLM APIs (here NVIDIA NIM with Nemotron) make it cheap to turn a cluster of excerpts into a readable topic name and a structured brief.
-- Google's guidance on scaled content abuse makes "generate 100 articles automatically" a liability. The value has shifted to *choosing the right topics* and briefing human writers well, which is exactly what GapLens does.
+- Google's guidance on scaled content abuse makes "generate 100 articles automatically" a liability. The value has shifted to *choosing the right topics* and briefing human writers well, which is exactly what RankRadar does.
 - Cynbit is hiring a Content Strategist and a Growth Manager, which suggests content is a growing part of its work.
 
 ## 5. Success definition for the PoC
@@ -66,14 +66,14 @@ The proof of concept is successful if:
 
 **Out of scope**
 
-- Predicting Google rankings or traffic. GapLens produces an *opportunity score* for prioritisation, not a ranking forecast.
+- Predicting Google rankings or traffic. RankRadar produces an *opportunity score* for prioritisation, not a ranking forecast.
 - Generating or publishing full articles. Outputs are briefs for human writers.
 - Keyword volume / difficulty data, Google Search Console data, backlinks (planned for the production version).
 - Authentication, multi-tenant storage, scheduling (planned for production).
 
 ## 7. Demo case
 
-I run GapLens on **Cynbit's own blog** (https://www.cynbit.in/blog) as the client, against competitor agency blogs with overlapping services:
+I run RankRadar on **Cynbit's own blog** (https://www.cynbit.in/blog) as the client, against competitor agency blogs with overlapping services:
 
 | Site | Role | Listing |
 |---|---|---|
@@ -86,6 +86,6 @@ The output answers one question: **which topics is Cynbit's own content missing,
 
 ## 8. Deliverables
 
-1. `reports/AI_OPPORTUNITY_REPORT.md`: the opportunity analysis and why I chose GapLens.
+1. `reports/AI_OPPORTUNITY_REPORT.md`: the opportunity analysis and why I chose RankRadar.
 2. The working PoC: pipeline, Streamlit app and notebook.
 3. `reports/TECHNICAL_APPROACH_REPORT.md`: architecture, modelling, evaluation and execution plan.

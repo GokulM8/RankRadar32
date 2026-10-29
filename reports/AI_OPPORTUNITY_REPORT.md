@@ -2,11 +2,13 @@
 
 *Deliverable 1, AI/ML Engineer Intern assessment*
 
+> **RankRadar: spot the content gaps between you and your competitors.** RankRadar prioritises content opportunities; it does not predict or track search rankings.
+
 ## 1. Executive summary
 
 Cynbit Technologies sells AI automation, custom software and cloud work, and digital marketing including Technical SEO, and it runs its own SaaS products and the BitElevate internship programme. I looked at four places where AI/ML could add value using only public information, scored them on impact, feasibility, data availability, time to value and fit, and chose one for a working proof of concept.
 
-**Selected: GapLens, an AI content-gap and opportunity engine for Cynbit's SEO services.** It crawls a client's blog and its competitors' blogs, groups their content into topics with sentence embeddings and density clustering, finds topics competitors cover that the client does not, scores them transparently and writes grounded content briefs for human writers. It turns a multi-day manual content audit into a repeatable deliverable that can be part of every SEO retainer, and it runs on the stack Cynbit already lists (Python, FastAPI, PostgreSQL, Pinecone).
+**Selected: RankRadar, an AI content-gap and opportunity engine for Cynbit's SEO services.** It crawls a client's blog and its competitors' blogs, groups their content into topics with sentence embeddings and density clustering, finds topics competitors cover that the client does not, scores them transparently and writes grounded content briefs for human writers. It turns a multi-day manual content audit into a repeatable deliverable that can be part of every SEO retainer, and it runs on the stack Cynbit already lists (Python, FastAPI, PostgreSQL, Pinecone).
 
 **PoC results on Cynbit's own blog** (25 posts) against two competitor agencies (75 posts): 788 sections grouped into 50 topics, of which 30 are Gaps and 10 are Weak spots for Cynbit. The full run takes under 3 minutes plus a polite crawl. Ten LLM-written briefs passed schema and copy checks. The tool surfaced concrete, useful topics, for example AI logistics automation, WhatsApp chatbot automation, AWS vs Azure vs GCP, custom CRM vs Salesforce costs and on-prem LLM deployment.
 
@@ -37,7 +39,7 @@ The engine, data pipeline, briefs and dashboard work. The ranking needs the v2 c
 
 ## 3. Opportunity landscape
 
-### 3.1 GapLens: AI content-gap and opportunity engine for SEO services (selected)
+### 3.1 RankRadar: AI content-gap and opportunity engine for SEO services (selected)
 
 | | |
 |---|---|
@@ -65,7 +67,7 @@ The engine, data pipeline, briefs and dashboard work. The ranking needs the v2 c
 |---|---|
 | **Where** | Revio, which already syncs reviews, analyses sentiment and generates AI responses. |
 | **Problem** | Sentiment scores alone do not tell a multi-location business *what* customers are unhappy about or when something is going wrong. Fully automatic replies risk off-brand or harmful responses. |
-| **AI/ML approach** | Theme clustering of reviews (the same embedding and clustering approach as GapLens), spike detection on theme volume per location, and a reply safety layer (policy checks, escalation of sensitive reviews to a human, a confidence threshold before auto-posting). |
+| **AI/ML approach** | Theme clustering of reviews (the same embedding and clustering approach as RankRadar), spike detection on theme volume per location, and a reply safety layer (policy checks, escalation of sensitive reviews to a human, a confidence threshold before auto-posting). |
 | **Value** | A product differentiator for Revio and fewer reputational incidents for its customers. |
 | **Data needed** | Revio's review data (internal). |
 | **Feasibility** | Medium–high, but it needs product access and real review data. |
@@ -87,12 +89,12 @@ Scores 1 (low) to 5 (high). "Data availability" means data I could use for a PoC
 
 | Opportunity | Business impact | Feasibility | Data availability | Time to value | Fit | **Total** |
 |---|---|---|---|---|---|---|
-| **GapLens (SEO content gaps)** | 4 | 5 | 5 | 5 | 5 | **24** |
+| **RankRadar (SEO content gaps)** | 4 | 5 | 5 | 5 | 5 | **24** |
 | BitElevate PR review copilot | 4 | 3 | 1 | 3 | 4 | 15 |
 | Revio review intelligence 2.0 | 4 | 4 | 1 | 3 | 5 | 17 |
 | Lead intake and routing copilot | 3 | 4 | 1 | 4 | 3 | 15 |
 
-**Why GapLens for the PoC.** It is the only option I could build and evaluate end to end on real data without access to Cynbit's systems. It strengthens a service Cynbit already sells, and the timing is good: the Content Strategist and Growth Manager roles on the careers page suggest content and growth are a current focus. The other three are strong opportunities, and the embedding and clustering components built for GapLens transfer directly to Revio's theme clustering.
+**Why RankRadar for the PoC.** It is the only option I could build and evaluate end to end on real data without access to Cynbit's systems. It strengthens a service Cynbit already sells, and the timing is good: the Content Strategist and Growth Manager roles on the careers page suggest content and growth are a current focus. The other three are strong opportunities, and the embedding and clustering components built for RankRadar transfer directly to Revio's theme clustering.
 
 ## 5. Selected opportunity: deep dive
 
@@ -100,15 +102,15 @@ Scores 1 (low) to 5 (high). "Data availability" means data I could use for a PoC
 
 **How it plugs into SEO retainers.**
 
-1. **Onboarding:** run GapLens on the client and 2–4 competitors and walk the client through the topic map and top gaps.
+1. **Onboarding:** run RankRadar on the client and 2–4 competitors and walk the client through the topic map and top gaps.
 2. **Monthly:** re-crawl and re-score; review new gaps and gaps closed since last month; produce briefs for the month's articles.
 3. **Quarterly:** report which published briefs gained impressions and clicks (once Search Console is connected).
 
-**Value (assumptions to validate).** A manual content-gap audit typically takes a strategist several days per client. GapLens produces the topic map, ranked gaps and first-draft briefs in minutes, leaving the strategist to review and decide. Phase B of the execution plan measures the actual time saved.
+**Value (assumptions to validate).** A manual content-gap audit typically takes a strategist several days per client. RankRadar produces the topic map, ranked gaps and first-draft briefs in minutes, leaving the strategist to review and decide. Phase B of the execution plan measures the actual time saved.
 
 **Build vs buy.** Tools such as Surfer and Clearscope exist, but they are per-seat SaaS, centred on optimising single pages, not white-labelled, and they keep the data. An in-house engine lets Cynbit brand the deliverable, tune scoring to each client's services, combine it with first-party Search Console data, keep the margin and reuse the components across products. The stack is already Cynbit's own.
 
-**Responsible use.** GapLens writes briefs, never articles, and never publishes. Google's scaled-content-abuse policy makes mass-generated articles a risk to clients' sites. Briefs are grounded in short excerpts and checked in code for copied competitor wording.
+**Responsible use.** RankRadar writes briefs, never articles, and never publishes. Google's scaled-content-abuse policy makes mass-generated articles a risk to clients' sites. Briefs are grounded in short excerpts and checked in code for copied competitor wording.
 
 ## 6. Headline PoC results
 

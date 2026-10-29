@@ -1,6 +1,6 @@
 # 08 — Execution Plan
 
-GapLens grows in five phases, from the public-data PoC to a learned model inside Cynbit's SEO retainers. Each phase has a clear exit criterion, so Cynbit can stop or redirect after any of them.
+RankRadar grows in five phases, from the public-data PoC to a learned model inside Cynbit's SEO retainers. Each phase has a clear exit criterion, so Cynbit can stop or redirect after any of them.
 
 ## Phase A: PoC on public data (done)
 
@@ -54,17 +54,17 @@ The evaluation found three root causes: relevance is confounded with existing co
 
 ## Phase D: Content refresh module
 
-GapLens answers "what should we create?". The other half of content strategy is "what should we fix?": existing pages that are losing impressions or clicks.
+RankRadar answers "what should we create?". The other half of content strategy is "what should we fix?": existing pages that are losing impressions or clicks.
 
 I have built this before. In a previous internship I built a **content-refresh prioritisation model**: a Random Forest that ranked existing pages by their likelihood of declining, validated with client-grouped splits so it was always tested on unseen clients. It reached a **ROC-AUC of 0.955 against 0.687 for the rule-based baseline** it replaced.
 
-For Cynbit, the refresh module would use the Search Console history ingested in Phase B: trend features (impressions and clicks over 4/8/12 weeks), position volatility, content age, and competitor content published on the same cluster since the page was written (from GapLens's own crawl). Combined, GapLens covers both "what to create" and "what to fix", in one monthly report per client.
+For Cynbit, the refresh module would use the Search Console history ingested in Phase B: trend features (impressions and clicks over 4/8/12 weeks), position volatility, content age, and competitor content published on the same cluster since the page was written (from RankRadar's own crawl). Combined, RankRadar covers both "what to create" and "what to fix", in one monthly report per client.
 
 **KPIs:** ROC-AUC above the rule baseline on client-grouped validation; refreshed pages recover impressions faster than unrefreshed declining pages.
 
 ## Phase E: Supervised opportunity model
 
-Once several pilot clients have published briefs with 8–12 weeks of Search Console outcomes, replace the hand-set weights with a model trained on outcomes (`04` §8): features from GapLens plus keyword data, client-grouped cross-validation, and the weighted score and competitor-count baseline as the bars to beat. Keep the explanations (coefficients or SHAP) so strategists still see why a topic ranks high.
+Once several pilot clients have published briefs with 8–12 weeks of Search Console outcomes, replace the hand-set weights with a model trained on outcomes (`04` §8): features from RankRadar plus keyword data, client-grouped cross-validation, and the weighted score and competitor-count baseline as the bars to beat. Keep the explanations (coefficients or SHAP) so strategists still see why a topic ranks high.
 
 **KPIs:** a higher rank correlation between predicted and actual impressions than the weighted score, on clients the model has not seen.
 

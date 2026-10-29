@@ -11,7 +11,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from gaplens.sectionize import embedding_text
+from rankradar.sectionize import embedding_text
 
 log = logging.getLogger(__name__)
 

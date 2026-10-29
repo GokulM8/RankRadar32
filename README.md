@@ -1,12 +1,14 @@
-# Cynbit GapLens
+# RankRadar
 
-> **See the content your competitors cover and you don't.**
+> **RankRadar: spot the content gaps between you and your competitors.**
 
-GapLens is an AI content-gap and opportunity engine for Cynbit's SEO services. It politely crawls a client's blog and its competitors' blogs, splits every post into heading-level sections, embeds and clusters them by meaning, finds topics competitors cover but the client doesn't, ranks those gaps with a transparent opportunity score and writes grounded content briefs for human writers. It never generates or publishes articles.
+RankRadar prioritises content opportunities; it does not predict or track search rankings.
+
+RankRadar is an AI content-gap and opportunity engine for Cynbit's SEO services. It politely crawls a client's blog and its competitors' blogs, splits every post into heading-level sections, embeds and clusters them by meaning, finds topics competitors cover but the client doesn't, ranks those gaps with a transparent opportunity score and writes grounded content briefs for human writers. It never generates or publishes articles.
 
 I built it as a take-home assessment for the AI/ML Engineer Intern role at Cynbit Technologies, and demonstrated it on **Cynbit's own blog** against two competitor agencies.
 
-![GapLens dashboard overview](docs/img/dashboard_overview.png)
+![RankRadar dashboard overview](docs/img/dashboard_overview.png)
 
 **Live demo:** _add the Streamlit Community Cloud URL after deploying (steps below)._
 
@@ -42,18 +44,18 @@ Ranks 1, 3, 6 and 9 were labelled "already covered" by existing Cynbit posts.
 Requires Python 3.10+ and works on CPU only. I developed and tested it on Python 3.13.
 
 ```bash
-git clone <repo-url> gaplens-content-intelligence
-cd gaplens-content-intelligence
+git clone <repo-url> rankradar-content-intelligence
+cd rankradar-content-intelligence
 python -m venv .venv
 source .venv/bin/activate            # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 cp .env.example .env                 # optional: add NVIDIA_API_KEY from build.nvidia.com
 
 # Full run: polite crawl (a few minutes), then the analysis
-python -m gaplens.pipeline --config config.yaml
+python -m rankradar.pipeline --config config.yaml
 
 # Re-run the analysis on cached data, without an API key
-python -m gaplens.pipeline --config config.yaml --skip-crawl --no-llm
+python -m rankradar.pipeline --config config.yaml --skip-crawl --no-llm
 
 # Dashboard (reads outputs/, so it works straight after cloning)
 streamlit run app/streamlit_app.py
@@ -62,7 +64,7 @@ streamlit run app/streamlit_app.py
 pytest -q
 ```
 
-Without `NVIDIA_API_KEY`, GapLens uses keyword topic labels and template briefs. Scores and rankings are identical either way.
+Without `NVIDIA_API_KEY`, RankRadar uses keyword topic labels and template briefs. Scores and rankings are identical either way.
 
 ## How it works
 
@@ -87,10 +89,10 @@ Crawl → Extract → Sectionize → Embed (bge-small) → UMAP → HDBSCAN → 
 ├── data/client_services.txt      # Cynbit's service descriptions (relevance)
 ├── data/labels/                  # hand-label template and filled labels
 ├── docs/                         # brief, SRS, architecture, design docs, ADRs
-├── notebooks/gaplens_walkthrough.ipynb
+├── notebooks/rankradar_walkthrough.ipynb
 ├── outputs/                      # gaps.csv, briefs.json, metrics.json, figures, topic_map.parquet
 ├── reports/                      # Deliverables 1 and 3
-├── src/gaplens/                  # crawl, sectionize, embed, cluster, label, llm, gaps, score, briefs, evaluate, pipeline
+├── src/rankradar/                  # crawl, sectionize, embed, cluster, label, llm, gaps, score, briefs, evaluate, pipeline
 └── tests/test_basic.py
 ```
 
@@ -101,7 +103,7 @@ Crawled text and intermediate files (`data/raw/`, `data/processed/`) are not com
 | Deliverable | Where |
 |---|---|
 | 1. AI opportunity analysis | [`reports/AI_OPPORTUNITY_REPORT.md`](reports/AI_OPPORTUNITY_REPORT.md) |
-| 2. Proof of concept | `src/gaplens/`, [`app/streamlit_app.py`](app/streamlit_app.py), [`notebooks/gaplens_walkthrough.ipynb`](notebooks/gaplens_walkthrough.ipynb) |
+| 2. Proof of concept | `src/rankradar/`, [`app/streamlit_app.py`](app/streamlit_app.py), [`notebooks/rankradar_walkthrough.ipynb`](notebooks/rankradar_walkthrough.ipynb) |
 | 3. Technical approach | [`reports/TECHNICAL_APPROACH_REPORT.md`](reports/TECHNICAL_APPROACH_REPORT.md) |
 
 ## Documentation (reading order)

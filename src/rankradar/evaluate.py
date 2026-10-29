@@ -133,7 +133,7 @@ def label_metrics(
 
     # Post-hoc ablation: drop one component at a time (other weights rescaled to sum to 1).
     # Diagnostic only; the shipped weights are not tuned on these labels.
-    from gaplens.score import apply_scores
+    from rankradar.score import apply_scores
 
     weights = weights_used or {}
     ablation = {}

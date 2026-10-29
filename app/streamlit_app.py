@@ -1,4 +1,4 @@
-"""GapLens dashboard. Reads precomputed outputs only, so it loads fast and runs on Streamlit Community Cloud.
+"""RankRadar dashboard. Reads precomputed outputs only, so it loads fast and runs on Streamlit Community Cloud.
 
     streamlit run app/streamlit_app.py
 """
@@ -18,13 +18,13 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from gaplens.score import apply_scores  # noqa: E402
+from rankradar.score import apply_scores  # noqa: E402
 
 OUT = ROOT / "outputs"
 SITE_COLORS = ["#2a78d6", "#eb6834", "#1baf7a", "#6250d6"]
 NOISE_COLOR = "#b9b8b2"
 
-st.set_page_config(page_title="Cynbit GapLens", layout="wide")
+st.set_page_config(page_title="RankRadar", layout="wide")
 
 
 @st.cache_data
@@ -38,7 +38,7 @@ def load():
 
 
 if not (OUT / "gaps.csv").exists():
-    st.error("No outputs found. Run `python -m gaplens.pipeline --config config.yaml` first.")
+    st.error("No outputs found. Run `python -m rankradar.pipeline --config config.yaml` first.")
     st.stop()
 
 cfg, gaps, tmap, briefs, metrics = load()
@@ -46,8 +46,8 @@ client = next(s["name"] for s in cfg["sites"] if s["role"] == "client")
 site_order = [s["name"] for s in sorted(cfg["sites"], key=lambda s: s["role"] != "client")]
 color_map = {n: SITE_COLORS[i % len(SITE_COLORS)] for i, n in enumerate(site_order)}
 
-st.title("Cynbit GapLens")
-st.caption("See the content your competitors cover and you don't. Opportunity scores are for prioritisation, not ranking predictions.")
+st.title("RankRadar")
+st.caption("RankRadar: spot the content gaps between you and your competitors. RankRadar prioritises content opportunities; it does not predict or track search rankings.")
 
 overview, topic_map, gaps_tab, briefs_tab, method = st.tabs(["Overview", "Topic Map", "Gaps", "Briefs", "Method"])
 
@@ -90,7 +90,7 @@ with overview:
             st.dataframe(
                 pd.DataFrame(
                     {
-                        "ranking": ["GapLens opportunity score", "Baseline: competitor section count"],
+                        "ranking": ["RankRadar opportunity score", "Baseline: competitor section count"],
                         "P@10": [prec["opportunity_score"]["p@10"]["precision"], prec["baseline_competitor_count"]["p@10"]["precision"]],
                         "P@25": [prec["opportunity_score"]["p@25"]["precision"], prec["baseline_competitor_count"]["p@25"]["precision"]],
                     }
@@ -155,7 +155,7 @@ with briefs_tab:
         st.markdown("\n".join(f"- {u}" for u in b["competitor_reference_urls"]))
         if b.get("internal_link_from"):
             st.markdown(f"**Internal link from:** {b['internal_link_from']}")
-        st.caption("Briefs are for human writers. GapLens never generates or publishes articles (see Google's scaled content abuse policy).")
+        st.caption("Briefs are for human writers. RankRadar never generates or publishes articles (see Google's scaled content abuse policy).")
 
 with method:
     st.markdown(

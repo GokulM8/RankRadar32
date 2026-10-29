@@ -1,4 +1,4 @@
-# 01 — Software Requirements Specification: GapLens
+# 01 — Software Requirements Specification: RankRadar
 
 Version 0.1 (PoC). Structure loosely follows IEEE 830.
 
@@ -6,11 +6,11 @@ Version 0.1 (PoC). Structure loosely follows IEEE 830.
 
 ### 1.1 Purpose
 
-This document specifies the requirements for the GapLens proof of concept: a pipeline and dashboard that finds content topics competitors cover and a client does not, scores them, and produces briefs for human writers. It is the contract the code is built against.
+This document specifies the requirements for the RankRadar proof of concept: a pipeline and dashboard that finds content topics competitors cover and a client does not, scores them, and produces briefs for human writers. It is the contract the code is built against.
 
 ### 1.2 Scope
 
-GapLens takes a client website and a set of competitor websites, crawls their public blog posts, groups the content into topics and outputs:
+RankRadar takes a client website and a set of competitor websites, crawls their public blog posts, groups the content into topics and outputs:
 
 - a ranked table of content gaps with explanations (`outputs/gaps.csv`),
 - content briefs for the top-N gaps (`outputs/briefs.json`),
@@ -47,7 +47,7 @@ It does not predict search rankings and does not publish content.
 
 ### 2.1 Product perspective
 
-GapLens is a standalone Python pipeline in the PoC. Each stage reads and writes files under `data/` and `outputs/`, so stages can be re-run independently and the dashboard only reads precomputed outputs. In production it would become a FastAPI service backed by PostgreSQL and a vector store (see `02_ARCHITECTURE.md`).
+RankRadar is a standalone Python pipeline in the PoC. Each stage reads and writes files under `data/` and `outputs/`, so stages can be re-run independently and the dashboard only reads precomputed outputs. In production it would become a FastAPI service backed by PostgreSQL and a vector store (see `02_ARCHITECTURE.md`).
 
 ### 2.2 User classes
 
@@ -122,5 +122,5 @@ GapLens is a standalone Python pipeline in the PoC. Each stage reads and writes 
 - [ ] **AC-10 (FR-12):** `streamlit run app/streamlit_app.py` loads and all five tabs render.
 - [ ] **AC-11 (FR-13):** `gap_labels_template.csv` has 25 rows with blank `is_real_gap`; once filled, Precision@10/@25 and baseline precision appear in `metrics.json`.
 - [ ] **AC-12 (FR-14):** Changing a weight or threshold in `config.yaml` changes the output without code changes.
-- [ ] **AC-13 (NFR-01, NFR-02):** `python -m gaplens.pipeline --config config.yaml --skip-crawl --no-llm` completes in under 10 minutes.
+- [ ] **AC-13 (NFR-01, NFR-02):** `python -m rankradar.pipeline --config config.yaml --skip-crawl --no-llm` completes in under 10 minutes.
 - [ ] **AC-14 (NFR-04):** No API key or `.env` file is tracked by git.
