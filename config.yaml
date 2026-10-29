@@ -15,6 +15,7 @@ paths:
   cluster_labels: data/processed/cluster_labels.json
   services_text: data/client_services.txt
   labels_template: data/labels/gap_labels_template.csv
+  labels_filled: data/labels/gap_labels_filled.csv
   gaps: outputs/gaps.csv
   briefs: outputs/briefs.json
   metrics: outputs/metrics.json

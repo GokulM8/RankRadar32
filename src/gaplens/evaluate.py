@@ -83,19 +83,95 @@ def precision_at(ranked_ids: list[int], labels: dict[int, int], k: int) -> dict[
     }
 
 
-def label_metrics(gaps: pd.DataFrame, path: Path) -> dict[str, Any] | None:
-    """Precision@10/@25 of the opportunity score vs the competitor-count baseline, if labels exist."""
+def _precision_of(df: pd.DataFrame) -> dict[str, Any]:
+    return {"n": int(len(df)), "real": int(df["is_real_gap"].sum()), "precision": round(float(df["is_real_gap"].mean()), 4) if len(df) else None}
+
+
+def competitor_self_mention(sections: pd.DataFrame) -> pd.Series:
+    """Diagnostic only (not part of the score): share of a cluster's competitor sections that name
+    their own site, e.g. a Proeffico section containing "Proeffico". High values suggest self-promotion."""
+    comp = sections[sections["role"] == "competitor"]
+    first_word = comp["site"].str.split().str[0].str.lower()
+    mentions = [fw in f"{h} {t}".lower() for fw, h, t in zip(first_word, comp["heading"], comp["text"])]
+    comp = comp.assign(self_mention=mentions)
+    return comp.groupby("cluster_id")["self_mention"].mean()
+
+
+def label_metrics(
+    gaps: pd.DataFrame, sections: pd.DataFrame, clusters: pd.DataFrame, path: Path, weights_used: dict[str, float] | None = None
+) -> dict[str, Any] | None:
+    """Precision@10/@25 of the opportunity score vs the competitor-count baseline, label provenance
+    and a short error analysis. Returns None if no filled label file exists."""
     if not labels_filled(path):
         return None
     lab = pd.read_csv(path).dropna(subset=["is_real_gap"])
+    lab["is_real_gap"] = lab["is_real_gap"].astype(int)
     labels = {int(r.cluster_id): int(r.is_real_gap) for r in lab.itertuples()}
-    score_rank = gaps.dropna(subset=["score"])["cluster_id"].astype(int).tolist()
+    scored = gaps.dropna(subset=["score"]).reset_index(drop=True)
+    scored["score_rank"] = np.arange(1, len(scored) + 1)
+    score_rank = scored["cluster_id"].astype(int).tolist()
     base_rank = baseline_rank(gaps)["cluster_id"].astype(int).tolist()
+
+    sec = sections.merge(clusters[["section_id", "cluster_id"]], on="section_id")
+    self_mention = competitor_self_mention(sec)
+    cols = ["cluster_id", "label", "status", "score", "score_rank", "effort", "closest_client_similarity", "relevance", "competitor_strength", "intent"]
+    joined = scored[cols].merge(lab[["cluster_id", "is_real_gap", "notes"] + [c for c in ("confidence", "label_source") if c in lab]], on="cluster_id")
+    joined["competitor_self_mention"] = joined["cluster_id"].map(self_mention).fillna(0).round(3)
+
+    def rows(df: pd.DataFrame) -> list[dict[str, Any]]:
+        keep = ["cluster_id", "label", "score_rank", "score", "status", "effort", "closest_client_similarity", "competitor_self_mention", "notes"]
+        return df[keep].to_dict("records")
+
+    provenance: dict[str, Any] = {}
+    if "label_source" in lab:
+        provenance["label_source"] = lab["label_source"].value_counts().to_dict()
+        provenance["human_overrides"] = int((lab["label_source"] == "human_override").sum())
+    if "confidence" in lab:
+        provenance["confidence"] = lab["confidence"].value_counts().to_dict()
+
+    confident = {int(r.cluster_id): int(r.is_real_gap) for r in lab.itertuples() if getattr(r, "confidence", "high") != "low"}
+
+    # Post-hoc ablation: drop one component at a time (other weights rescaled to sum to 1).
+    # Diagnostic only; the shipped weights are not tuned on these labels.
+    from gaplens.score import apply_scores
+
+    weights = weights_used or {}
+    ablation = {}
+    for drop in weights:
+        rest = {k: v for k, v in weights.items() if k != drop}
+        w = {**{k: v / sum(rest.values()) for k, v in rest.items()}, drop: 0.0}
+        rank = gaps.assign(_s=apply_scores(gaps, w)).dropna(subset=["_s"]).sort_values("_s", ascending=False)["cluster_id"].astype(int).tolist()
+        ablation[f"without_{drop}"] = {f"p@{k}": precision_at(rank, labels, k) for k in (10, 25)}
     return {
+        "label_file": path.name,
         "n_labelled": len(labels),
         "n_real_gaps": int(sum(labels.values())),
+        "n_not_gaps": int(len(labels) - sum(labels.values())),
+        "provenance": provenance,
         "opportunity_score": {f"p@{k}": precision_at(score_rank, labels, k) for k in (10, 25)},
         "baseline_competitor_count": {f"p@{k}": precision_at(base_rank, labels, k) for k in (10, 25)},
+        "excluding_low_confidence": {
+            "opportunity_score": {f"p@{k}": precision_at(score_rank, confident, k) for k in (10, 25)},
+            "baseline_competitor_count": {f"p@{k}": precision_at(base_rank, confident, k) for k in (10, 25)},
+        },
+        "ablation_post_hoc": ablation,
+        "error_analysis": {
+            "top10_labelled_0": rows(joined[(joined["score_rank"] <= 10) & (joined["is_real_gap"] == 0)]),
+            "rank_gt_15_labelled_1": rows(joined[(joined["score_rank"] > 15) & (joined["is_real_gap"] == 1)]),
+            "precision_by_effort": {
+                "effort_0_expand_existing": _precision_of(joined[joined["effort"] == 0]),
+                "effort_1_new_page": _precision_of(joined[joined["effort"] == 1]),
+            },
+            "mean_closest_client_similarity": {
+                "labelled_1": round(float(joined.loc[joined["is_real_gap"] == 1, "closest_client_similarity"].mean()), 4),
+                "labelled_0": round(float(joined.loc[joined["is_real_gap"] == 0, "closest_client_similarity"].mean()), 4),
+            },
+            "competitor_self_mention": {
+                "mean_labelled_1": round(float(joined.loc[joined["is_real_gap"] == 1, "competitor_self_mention"].mean()), 4),
+                "mean_labelled_0": round(float(joined.loc[joined["is_real_gap"] == 0, "competitor_self_mention"].mean()), 4),
+                "clusters_ge_0_3": _precision_of(joined[joined["competitor_self_mention"] >= 0.3]),
+            },
+        },
     }
 
 
