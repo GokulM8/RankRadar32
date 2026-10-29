@@ -125,8 +125,9 @@ def compute_components(
         eff.append(0.0 if close_sim[-1] >= threshold else 1.0)
 
         lab = labels.get(int(cid), {})
+        # Keywords, headings and titles only (not the LLM topic name), so scores do not depend on the LLM.
         intent_text = " ".join(
-            [lab.get("label", ""), " ".join(lab.get("keywords", []))]
+            [" ".join(lab.get("keywords", []))]
             + sections["heading"].iloc[idx].tolist()
             + sections["page_title"].iloc[idx].drop_duplicates().tolist()
         )
