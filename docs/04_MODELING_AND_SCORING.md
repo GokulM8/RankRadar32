@@ -94,12 +94,13 @@ Mean overlap is 9.88 of 10 and the minimum is 9. The top-10 is robust to reasona
 
 ## 7. What the evaluation says about the score
 
-The hand-label evaluation (`06`) found two things that change how I would build the next version:
+On the hand labels, the score did not beat a naive baseline: Precision@10 0.60 vs 0.80, Precision@25 0.60 vs 0.64 (`06`). The root causes are in the design described above:
 
-1. **The Gap rule misses semantic coverage.** A topic counts as a Gap when none of Cynbit's *sections* fall into its cluster. Cynbit can still cover the topic in sections that landed in a neighbouring cluster. The clearest case: cluster 5, "AI automation for small businesses", is **Covered**, while cluster 14, "AI automation benefits for small businesses", is the **#1 Gap**.
-2. **Relevance favours topics Cynbit already writes about.** The topics most similar to Cynbit's service text are, unsurprisingly, the ones Cynbit has already blogged about. In a post-hoc ablation, removing relevance raised Precision@10 from 0.60 to 0.70.
+1. **Relevance is confounded with existing coverage.** The topics most similar to Cynbit's service text are the ones Cynbit has already blogged about, and relevance has the largest weight.
+2. **Site-level cluster splitting creates false gaps.** Cluster 5, "AI automation for small businesses" (Cynbit 5, Proeffico 4 sections), is **Covered**. Its twin, cluster 14, "AI business automation benefits" (Proeffico 17), is the **#1 Gap**.
+3. **The semantic coverage check only affects effort, not gap status** (§5): closeness to a Cynbit page raises the score instead of removing the topic from the Gap list.
 
-The fix I would test next is a **coverage penalty**: lower the score when Cynbit has a page whose overall content (not just one section) is close to the topic, and use that similarity to separate "write a new post" from "already covered". I have not tuned the shipped weights on these 31 labels. With so few labels that would be fitting to the test set; the fix needs a fresh labelled sample to validate.
+A post-hoc ablation without relevance gave Precision@10 0.70. It is untuned, measured on the labels that motivated it, and not a claim. I have not retuned the shipped weights on these 31 labels; the v2 plan in `08` changes the gap logic and then re-evaluates on fresh labels.
 
 ## 8. From a weighted score to a supervised model
 

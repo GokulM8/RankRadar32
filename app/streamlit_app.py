@@ -98,7 +98,7 @@ with overview:
                 hide_index=True,
                 width="stretch",
             )
-            st.caption(f"{prec['n_labelled']} topics labelled ({prec['n_real_gaps']} real gaps). AI-assisted labels with a fixed rubric; see docs/06_EVALUATION.md.")
+            st.caption(f"{prec['n_labelled']} topics labelled ({prec['n_real_gaps']} real gaps). One AI-assisted labelling pass with a fixed rubric; scores were visible to the labeller. See docs/06_EVALUATION.md.")
         st.subheader(f"Top 5 opportunities for {client}")
         st.dataframe(
             gaps.dropna(subset=["score"]).head(5)[["label", "status", "score", "intent"]],

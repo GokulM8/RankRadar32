@@ -10,13 +10,28 @@ GapLens grows in five phases, from the public-data PoC to a learned model inside
 
 - The pipeline runs end to end in under 3 minutes plus the polite crawl, with or without an LLM key.
 - It finds concrete, useful gaps (logistics AI, WhatsApp chatbots, cloud provider comparison, custom CRM costs, on-prem LLMs).
-- **Its ranking did not beat a simple competitor-count baseline on my labels** (Precision@10 0.60 vs 0.80). The main cause is that the Gap rule misses topics Cynbit already covers in neighbouring clusters (`06_EVALUATION.md`). Phase B fixes that before any client sees a ranking.
+- **Its ranking did not beat a simple competitor-count baseline on my labels**: Precision@10 0.60 vs 0.80, Precision@25 0.60 vs 0.64 (`06_EVALUATION.md`). The v2 plan below addresses the root causes before any client sees a ranking.
+
+## v2 plan: fix the ranking before the pilot (about 2 weeks)
+
+The evaluation found three root causes: relevance is confounded with existing coverage; site-level cluster splitting creates false gaps; and the semantic coverage check only affected effort, not gap status. v2 changes the gap logic first and the weights last.
+
+| Step | Change | Why |
+|---|---|---|
+| 1. Coverage as a hard gate | Before scoring, compare every candidate topic with Cynbit's pages at page level (whole-page embeddings and the best-matching sections). A topic Cynbit already covers becomes Covered (or Weak spot if the coverage is thin) and is never scored as a Gap. Relevance becomes a gate ("does it fit Cynbit's services at all?") rather than the largest weight. | Removes the "already covered" false positives at the source instead of re-weighting around them. |
+| 2. Cross-site topic alignment | Stop one subject splitting into a client cluster and a competitor cluster. Options: merge clusters whose centroids are very close (for example clusters 5 and 14), match each competitor cluster to its nearest client content before assigning status, or cluster on text with site-specific boilerplate and style markers removed. | Fixes false gaps like "AI business automation benefits" (#1 Gap) vs "AI automation for small businesses" (Covered). |
+| 3. Fresh blind labels | Draw a new sample of topics from the v2 ranking and the baseline. Two labellers (at least one human) label it from a file with **no score, status or rank columns**, in shuffled order; labels are joined back afterwards. Report inter-annotator agreement (Cohen's kappa) and adjudicate disagreements before computing precision. | The PoC labels came from one labeller who could see the scores. v2 must be judged on labels it was not designed around. |
+| 4. Search Console outcome data | With a pilot client, connect Search Console and run the online test (`06` §8): publish briefs for high- and low-scored topics and compare impressions and clicks over 8–12 weeks. | Labels measure fit; only outcomes measure whether a gap was worth filling. |
+
+**Exit criterion:** on the fresh blind labels, v2 beats the competitor-count baseline at Precision@10 with acceptable agreement between labellers. If it does not, the baseline (with the coverage gate) is what goes to the pilot.
+
+**Rule kept from the PoC:** no weights are tuned on the 31 PoC labels.
 
 ## Phase B: Pilot with one Cynbit SEO client (2–4 weeks)
 
 | Work | Detail |
 |---|---|
-| Fix coverage detection | Page-level coverage check and relevance as a gate (`06` §7); re-evaluate on a fresh labelled sample. |
+| Start from v2 | Use the v2 ranking only if it passed its exit criterion; otherwise the coverage-gated baseline. |
 | Search Console ingestion | Read-only OAuth for one consenting client: queries, impressions, clicks and position per page. Use it to mark topics the client already ranks for. |
 | Keyword data | A SERP/keyword API (for example DataForSEO) for search volume and difficulty per cluster; add demand as a score component. |
 | Strategist workflow | The Content Strategist reviews the top 15 gaps and the briefs, and writers produce 8–10 articles. Start the online test from `06` §8. |
@@ -57,6 +72,7 @@ Once several pilot clients have published briefs with 8–12 weeks of Search Con
 
 | Phase | People | Effort |
 |---|---|---|
+| v2 | 1 ML engineer (me), plus a second labeller for about a day | ~2 weeks |
 | B | 1 ML engineer (me), Content Strategist part-time, 1 writer | 2–4 weeks |
 | C | 1 ML engineer, 1 backend developer part-time | 4–8 weeks |
 | D | 1 ML engineer | 3–4 weeks, overlapping with C once Search Console data flows |

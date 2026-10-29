@@ -76,17 +76,33 @@ Details: [`docs/04_MODELING_AND_SCORING.md`](../docs/04_MODELING_AND_SCORING.md)
 
 ## 7. Evaluation
 
-| Ranking (31 AI-assisted hand labels) | Precision@10 | Precision@25 |
+**Result: the opportunity score did not beat a naive baseline.** Precision@10 was **0.60 vs 0.80** for ranking by competitor section count, and Precision@25 was **0.60 vs 0.64**.
+
+| Ranking (31 labelled topics) | Precision@10 | Precision@25 |
 |---|---|---|
 | GapLens opportunity score | 0.60 | 0.60 |
 | Baseline: competitor section count | 0.80 | 0.64 |
 
-**GapLens did not beat the baseline on these labels.** The error analysis shows why.
+**Labels.**
 
-- **All four top-10 false positives are topics Cynbit already covers.** The Gap rule counts sections per cluster, and Cynbit's sections on those subjects landed in neighbouring clusters. For example, "AI automation for small businesses" is Covered, while "AI business automation benefits" is the #1 Gap.
-- **Relevance amplifies the problem.** The topics closest to Cynbit's services are the ones it already writes about. Removing relevance in a post-hoc ablation raises Precision@10 to 0.70.
-- **The labels have limits.** They come from one AI labeller with a fixed rubric, blind to scores, with 0 human overrides. The sample is small, and there is no traffic data.
-- **The proposed fix:** page-level coverage detection, relevance used as a gate rather than a weight, then re-evaluation on fresh labels, ideally from two human labellers. After that, an online test with a pilot client: publish briefs for high- and low-scored topics and compare Search Console outcomes over 8–12 weeks.
+- **How they were made:** one AI-assisted labelling pass with a fixed rubric, by a single labeller, on 31 rows, with 0 human overrides.
+- **The score column was visible to the labeller.** Any bias would therefore favour GapLens's ranking, and the baseline still won.
+- **The sample is small**, and there is no traffic data.
+
+**Root causes** ([`docs/06_EVALUATION.md`](../docs/06_EVALUATION.md) §5):
+
+1. **Relevance is confounded with existing coverage.** The topics closest to Cynbit's service text are the ones Cynbit already blogs about, and relevance carries the largest weight. All four top-10 false positives are topics Cynbit already covers.
+2. **Site-level cluster splitting creates false gaps.** "AI automation for small businesses" (Cynbit 5, Proeffico 4 sections) is marked Covered. Its twin, "AI business automation benefits" (Proeffico 17), is a separate cluster and the #1 Gap.
+3. **The semantic coverage check only affected effort, not gap status.** Closeness to an existing Cynbit page raised the score as "low effort" instead of removing the topic from the Gap list.
+
+**Post-hoc ablation.** Removing relevance gives Precision@10 0.70. This is post-hoc and untuned, measured on the same labels that motivated it, and **not a claim** that the variant is better. The shipped weights are unchanged.
+
+**v2 plan** ([`docs/08_EXECUTION_PLAN.md`](../docs/08_EXECUTION_PLAN.md)):
+
+1. Make coverage a hard gate before scoring.
+2. Align topics across sites.
+3. Collect fresh blind labels from two labellers and report an agreement score.
+4. Then validate on Search Console outcome data.
 
 **Runtime:** 167.81 s excluding the crawl (embedding 19.4 s, LLM labels 48.95 s, LLM briefs 92.64 s), well under the 10-minute requirement.
 

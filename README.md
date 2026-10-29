@@ -14,7 +14,16 @@ I built it as a take-home assessment for the AI/ML Engineer Intern role at Cynbi
 
 From the final run (`outputs/metrics.json`, 2026-10-29T17:35:44Z): 100 posts (Cynbit 25, Proeffico 39, Canny Technologies 36) were split into 788 sections and grouped into 50 topics. For Cynbit, 30 topics are **Gaps** and 10 are **Weak spots**.
 
-The top five gaps, ranked by opportunity score among those confirmed by my hand labels:
+**Ranking quality: the opportunity score did not beat a naive baseline.** On 31 labelled topics, Precision@10 was **0.60 vs 0.80** for ranking by competitor section count, and Precision@25 was **0.60 vs 0.64**. The labels come from one AI-assisted labelling pass that could see the scores, and the baseline still won.
+
+The causes are known:
+- Relevance is confounded with Cynbit's existing coverage.
+- Site-level cluster splitting creates false gaps. Cynbit's small-business automation content is marked Covered, while its Proeffico-only twin is the #1 Gap.
+- The coverage check affected effort, not gap status.
+
+Details are in [`docs/06_EVALUATION.md`](docs/06_EVALUATION.md); the v2 plan is in [`docs/08_EXECUTION_PLAN.md`](docs/08_EXECUTION_PLAN.md).
+
+The tool still surfaces useful topics. In the top 10, the labels confirm six, of which these five are the most concrete:
 
 | Rank | Topic | Status | Score | Why it matters for Cynbit |
 |---|---|---|---|---|
@@ -24,7 +33,7 @@ The top five gaps, ranked by opportunity score among those confirmed by my hand 
 | 7 | Cloud provider comparison (AWS vs Azure vs GCP) | Weak spot | 64.02 | Maps to cloud infrastructure and migration; Cynbit has one 137-word cloud post |
 | 8 | Custom CRM vs Salesforce costs | Weak spot | 59.60 | Maps to custom software and CRM automation; no build-vs-buy cost post |
 
-**Honest caveat.** Ranks 1, 3, 6 and 9 were labelled "already covered" by existing Cynbit posts. On 31 hand-labelled topics, GapLens's ranking reached Precision@10 0.60 vs 0.80 for a simple "rank by competitor coverage" baseline. The cause, a Gap rule that misses coverage in neighbouring clusters, and the fix are in [`docs/06_EVALUATION.md`](docs/06_EVALUATION.md).
+Ranks 1, 3, 6 and 9 were labelled "already covered" by existing Cynbit posts.
 
 ![Topic map](docs/img/dashboard_topic_map.png)
 
@@ -110,9 +119,9 @@ Crawled text and intermediate files (`data/raw/`, `data/processed/`) are not com
 
 ## Limitations
 
-- **The ranking did not beat a simple baseline** on my labels. Coverage detection needs to work at page level before the ranking goes in front of clients.
+- **The ranking did not beat a naive baseline** (Precision@10 0.60 vs 0.80; Precision@25 0.60 vs 0.64). Coverage must become a hard gate and topics must be aligned across sites before the ranking goes in front of clients.
 - **Two competitors, about 100 posts**, all public. There is no search volume, keyword difficulty or Search Console data yet, so "opportunity" is a proxy, not a traffic forecast.
-- **The labels have limits.** They come from one AI-assisted labeller with a fixed rubric, on a small sample.
+- **The labels have limits.** They come from one AI-assisted labelling pass with a fixed rubric: 31 rows, scores visible to the labeller, 0 human overrides.
 - **Single-site clusters.** Most clusters are dominated by one site's writing, so some "gaps" are one agency's niche.
 - **The opportunity score is for prioritisation only.** It does not predict Google rankings.
 

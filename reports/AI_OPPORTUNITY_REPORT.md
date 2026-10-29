@@ -10,7 +10,14 @@ Cynbit Technologies sells AI automation, custom software and cloud work, and dig
 
 **PoC results on Cynbit's own blog** (25 posts) against two competitor agencies (75 posts): 788 sections grouped into 50 topics, of which 30 are Gaps and 10 are Weak spots for Cynbit. The full run takes under 3 minutes plus a polite crawl. Ten LLM-written briefs passed schema and copy checks. The tool surfaced concrete, useful topics, for example AI logistics automation, WhatsApp chatbot automation, AWS vs Azure vs GCP, custom CRM vs Salesforce costs and on-prem LLM deployment.
 
-**The honest caveat:** on 31 hand-labelled topics, GapLens's ranking scored Precision@10 0.60, below a simple "rank by competitor coverage" baseline (0.80). The error analysis shows why. The top false positives are topics Cynbit already covers in neighbouring clusters. I describe a concrete fix, and it is the first step of the pilot plan. The engine, data pipeline, briefs and dashboard work; the ranking needs one more iteration before it goes in front of a client.
+**Ranking result: the opportunity score did not beat a naive baseline.** On 31 labelled topics, Precision@10 was 0.60 vs 0.80 for simply ranking by competitor coverage, and Precision@25 was 0.60 vs 0.64. The labels come from one AI-assisted labelling pass that could see the scores, and the baseline still won.
+
+The causes are known:
+- **Relevance overlaps with what Cynbit already covers.** Topics that sound most like Cynbit's services are the ones its blog already discusses.
+- **Clusters split by site.** One subject can split into a Cynbit cluster and a competitor cluster, so the competitor half looks like a gap.
+- **The coverage check only changed effort, never gap status.**
+
+The engine, data pipeline, briefs and dashboard work. The ranking needs the v2 changes in the execution plan (coverage as a hard gate, cross-site topic alignment, fresh blind labels) before it goes in front of a client.
 
 ## 2. About Cynbit (from public pages)
 
@@ -115,7 +122,7 @@ From `outputs/metrics.json` (run 2026-10-29T17:35:44Z).
 | Status for Cynbit | 30 Gaps, 10 Weak spots, 5 Covered, 5 Client-only |
 | Runtime, excluding crawl | 167.81 s |
 | LLM | 61 calls to `nvidia/nemotron-3.5-super-vl-120b-a12b`; 10 of 10 briefs from the LLM; 1 retry triggered by the copy check |
-| Ranking quality | Precision@10 0.60 and Precision@25 0.60, vs 0.80 and 0.64 for the competitor-count baseline (31 AI-assisted labels) |
+| Ranking quality | **Did not beat the baseline:** Precision@10 0.60 vs 0.80, Precision@25 0.60 vs 0.64 (31 labels from one AI-assisted pass that could see the scores) |
 | Weight sensitivity | Top 10 keeps 9.88 of 10 topics on average under ±0.1 weight shifts |
 
 ### What Cynbit's own blog is missing
@@ -139,7 +146,7 @@ The top 10 topics by opportunity score, with the hand label:
 
 ## 7. Next steps
 
-1. **Fix coverage detection** (page-level coverage, relevance as a gate) and re-evaluate on a fresh labelled sample. This is the main lesson from the PoC.
+1. **v2 ranking:** make coverage a hard gate before scoring, align topics across sites, and re-evaluate on fresh blind labels from two labellers with an agreement score. This is the main lesson from the PoC.
 2. **Pilot with one SEO client** for 2–4 weeks: add Search Console and keyword data, have the Content Strategist review gaps and briefs, and publish 8–10 articles as the start of an online test.
 3. **Productise** as a FastAPI service on PostgreSQL and Pinecone with monthly scheduled runs.
 4. **Add a content-refresh module** ("what to fix", alongside "what to create"), building on a client-grouped refresh model I have built before.
