@@ -97,8 +97,11 @@ scoring:
     competitor_strength: 0.25
     intent: 0.20
     effort: 0.15
-  # Client section at or above this cosine similarity to the centroid means "expand an existing page".
-  effort_similarity_threshold: 0.75
+  # A client section at or above this cosine similarity to the topic centroid means "expand an existing
+  # page" (effort 0). "auto" = the given quantile of member-to-centroid similarity over all clusters,
+  # because bge similarities sit in a narrow high band and a fixed value does not transfer across models.
+  effort_similarity_threshold: auto
+  effort_member_quantile: 0.25
   sensitivity_delta: 0.10
   intent_scores:
     transactional: 1.0
