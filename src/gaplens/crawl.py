@@ -7,6 +7,7 @@ and main text. Results go to `pages.jsonl`; every skipped or failed URL goes to 
 
 from __future__ import annotations
 
+import gzip
 import hashlib
 import json
 import logging
@@ -143,7 +144,8 @@ def _markdown_from_soup(soup: BeautifulSoup) -> str:
     return "\n\n".join(lines)
 
 
-INLINE_HEADING_RE = re.compile(r"\s(#{2,3})\s+")
+# Only "##" that sits mid-line (after other text on the same line), not a normal heading line.
+INLINE_HEADING_RE = re.compile(r"(?<=\S)[ \t]+(#{2,3})[ \t]+")
 
 
 def _split_inline_heading(level: str, rest: str) -> str:
@@ -221,8 +223,11 @@ def extract_page(html: str, url: str) -> dict[str, Any]:
     }
 
 
-def crawl_site(site: dict[str, Any], crawl_cfg: dict[str, Any], log_event) -> Iterator[dict[str, Any]]:
-    """Crawl one site and yield page records. Yields nothing if robots.txt blocks it."""
+def crawl_site(site: dict[str, Any], crawl_cfg: dict[str, Any], log_event, html_dir: Path | None = None) -> Iterator[dict[str, Any]]:
+    """Crawl one site and yield page records. Yields nothing if robots.txt blocks it.
+
+    If `html_dir` is given, the fetched HTML is cached there so extraction can be re-run without re-crawling.
+    """
     session = PoliteSession(crawl_cfg["user_agent"], crawl_cfg["delay_seconds"], crawl_cfg["timeout_seconds"])
     rp = load_robots(session, site["listing_urls"][0])
     robots_delay = rp.crawl_delay(session.user_agent)
@@ -253,6 +258,9 @@ def crawl_site(site: dict[str, Any], crawl_cfg: dict[str, Any], log_event) -> It
             continue
         if "charset" not in content_type.lower():
             resp.encoding = resp.apparent_encoding or "utf-8"  # requests defaults to ISO-8859-1 otherwise
+        if html_dir is not None:
+            with gzip.open(html_dir / f"{page_id(url)}.html.gz", "wt", encoding="utf-8") as f:
+                f.write(resp.text)
         page = extract_page(resp.text, url)
         if page["word_count"] < 100:
             log_event(url, "too_little_text", f"{page['word_count']} words")
@@ -275,7 +283,8 @@ def run_crawl(cfg: dict[str, Any]) -> dict[str, int]:
     """Crawl all configured sites; write pages.jsonl and the crawl log. Returns page counts per site."""
     pages_path: Path = cfg["paths"]["pages"]
     log_path: Path = cfg["paths"]["crawl_log"]
-    pages_path.parent.mkdir(parents=True, exist_ok=True)
+    html_dir: Path = cfg["paths"]["html_cache"]
+    html_dir.mkdir(parents=True, exist_ok=True)
 
     counts: dict[str, int] = {}
     with open(pages_path, "w", encoding="utf-8") as pages_f, open(log_path, "w", encoding="utf-8") as log_f:
@@ -286,12 +295,30 @@ def run_crawl(cfg: dict[str, Any]) -> dict[str, int]:
                 log_f.flush()
 
             counts[site["name"]] = 0
-            for record in crawl_site(site, cfg["crawl"], log_event):
+            for record in crawl_site(site, cfg["crawl"], log_event, html_dir):
                 pages_f.write(json.dumps(record, ensure_ascii=False) + "\n")
                 pages_f.flush()
                 counts[site["name"]] += 1
             log.info("%s: saved %d pages", site["name"], counts[site["name"]])
     return counts
+
+
+def reextract(cfg: dict[str, Any]) -> int:
+    """Re-run extraction on cached HTML and rewrite pages.jsonl (no network). Returns pages rewritten."""
+    pages = load_pages(cfg["paths"]["pages"])
+    html_dir: Path = cfg["paths"]["html_cache"]
+    out = []
+    for rec in pages:
+        cached = html_dir / f"{rec['page_id']}.html.gz"
+        if cached.exists():
+            with gzip.open(cached, "rt", encoding="utf-8") as f:
+                page = extract_page(f.read(), rec["url"])
+            rec.update({k: page[k] for k in ("title", "headings", "text", "word_count", "extractor")})
+        out.append(rec)
+    with open(cfg["paths"]["pages"], "w", encoding="utf-8") as f:
+        for rec in out:
+            f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+    return len(out)
 
 
 def load_pages(path: Path) -> list[dict[str, Any]]:

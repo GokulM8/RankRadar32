@@ -7,6 +7,7 @@ project:
 paths:
   pages: data/raw/pages.jsonl
   crawl_log: data/raw/crawl_log.jsonl
+  html_cache: data/raw/html
   sections: data/processed/sections.parquet
   embeddings: data/processed/embeddings.npy
   embeddings_meta: data/processed/embeddings_meta.json
@@ -14,7 +15,6 @@ paths:
   cluster_labels: data/processed/cluster_labels.json
   services_text: data/client_services.txt
   labels_template: data/labels/gap_labels_template.csv
-  labels_filled: data/labels/gap_labels.csv
   gaps: outputs/gaps.csv
   briefs: outputs/briefs.json
   metrics: outputs/metrics.json
