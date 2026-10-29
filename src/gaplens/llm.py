@@ -82,6 +82,7 @@ class LLMClient:
                     messages=[{"role": "system", "content": self.system_prompt(system)}, {"role": "user", "content": user}],
                     temperature=self.cfg.get("temperature", 0.2),
                     max_tokens=max_tokens or self.cfg.get("max_tokens", 1500),
+                    extra_body=self.cfg.get("extra_body") or None,
                 )
             except (RateLimitError, APIConnectionError, APITimeoutError) as exc:
                 log.warning("LLM %s attempt %d failed (%s); sleeping %.0fs", purpose, attempt + 1, type(exc).__name__, delay)

@@ -73,3 +73,25 @@ Each record follows: context → decision → alternatives → consequences.
 **Alternatives.** Full draft generation; auto-publishing to a CMS.
 
 **Consequences.** A human writer stays responsible for quality and originality, which protects Cynbit's clients. The tool saves strategist time on research and planning rather than replacing writers.
+
+---
+
+## ADR-007: Nemotron 3.5 Super instead of the planned Llama 3.3 Nemotron Super 49B
+
+**Context.** My plan named `nvidia/llama-3.3-nemotron-super-49b-v1`. Before the first call I listed the models on the NVIDIA API catalog endpoint: that id was no longer listed. I then sent the same small JSON task to the listed Nemotron chat models. `nemotron-3-super-120b-a12b`, `llama-3.1-nemotron-ultra-253b-v1`, `llama-3.1-nemotron-70b-instruct` and `nemotron-nano-3-30b-a3b` returned HTTP 404 for my key. `nemotron-3.5-super-vl-120b-a12b` and `nemotron-3-ultra-550b-a55b` both answered correctly.
+
+**Decision.** I use `nvidia/nemotron-3.5-super-vl-120b-a12b`, the closest current Super-class model, through the same OpenAI-compatible client. It ignores the `detailed thinking off` system line (it still produced a reasoning trace in my probe), so I dropped that line and switch reasoning off with `chat_template_kwargs: {enable_thinking: false}` in `config.yaml`. With that setting it returned clean JSON with no reasoning tokens.
+
+**Alternatives.** Nemotron 3 Ultra (larger and slower for the same short JSON tasks); keeping reasoning on (more tokens and latency, and nothing gained for naming a topic).
+
+**Consequences.** The model id and the request options live in config, so changing back is a config edit. Code strips `<think>` blocks and code fences anyway, in case a model ignores the setting.
+
+---
+
+## ADR-008: Opportunity scores do not depend on the LLM
+
+**Context.** At first the intent rules read the cluster label as well as its keywords. With the LLM on, the label is an LLM topic name, so the scores, and the ranking my hand labels evaluate, would change depending on whether a key was present.
+
+**Decision.** Intent is classified from keywords, section headings and page titles only. The LLM affects topic names and brief wording, never scores or ranks.
+
+**Consequences.** `--no-llm` and LLM runs produce the same `gaps.csv` scores and order, so precision results hold in both modes.

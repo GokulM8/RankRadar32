@@ -117,10 +117,14 @@ briefs:
 llm:
   enabled: true
   base_url: https://integrate.api.nvidia.com/v1
-  model: nvidia/llama-3.3-nemotron-super-49b-v1
+  # nvidia/llama-3.3-nemotron-super-49b-v1 is no longer listed; see docs/DECISIONS.md (ADR-007).
+  model: nvidia/nemotron-3.5-super-vl-120b-a12b
   api_key_env: NVIDIA_API_KEY
-  # First line of the system prompt; Nemotron Super uses it to turn reasoning traces off.
-  system_prefix: "detailed thinking off"
+  # This model ignores a "detailed thinking off" system line; reasoning is switched off via the chat template.
+  system_prefix: ""
+  extra_body:
+    chat_template_kwargs:
+      enable_thinking: false
   temperature: 0.2
   max_tokens: 1500
   max_retries: 5
