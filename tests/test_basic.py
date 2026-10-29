@@ -121,3 +121,46 @@ def test_inline_markdown_recovery_leaves_normal_headings_alone():
     fixed = recover_inline_markdown(flat)
     assert "\n## Where approvals get stuck\n" in fixed
     assert "Most delays come from design." in fixed
+
+
+class FakeLLM:
+    """Returns queued replies in order, to exercise validation, retry and fallback."""
+
+    model = "fake-model"
+
+    def __init__(self, replies):
+        self.replies = list(replies)
+
+    def chat(self, system, user, purpose, max_tokens=None):
+        return self.replies.pop(0)
+
+
+def _gap_row():
+    return pd.Series(
+        {"cluster_id": 7, "label": "approval workflow automation", "top_keywords": "approvals, routing, escalation",
+         "status": "Gap", "intent": "commercial", "competitor_sections": 9, "competitors_covering": 1,
+         "client_share": 0.0, "reason": "Gap: ...", "score": 55.0, "closest_client_url": "https://c.test/blog/x",
+         "closest_service": "LLM automation to automate manual data entry.", "competitor_urls": "https://a.test/1|https://a.test/2"}
+    )
+
+
+def test_brief_retries_once_then_uses_llm_output():
+    from gaplens.briefs import build_brief
+
+    good = ('{"topic": "Approval automation", "why_it_matters": "x", "target_intent": "commercial", '
+            '"suggested_title": "t", "outline": [{"h2": "a", "h3": []}, {"h2": "b", "h3": ["c"]}], '
+            '"questions_to_answer": ["q?"]}')
+    sections = pd.DataFrame(columns=["section_id", "role", "url", "heading", "text"])
+    clusters = pd.DataFrame(columns=["section_id", "cluster_id"])
+    b = build_brief(_gap_row(), sections, clusters, {}, "Cynbit", "services", FakeLLM(["not json", good]))
+    assert b["source"] == "llm" and b["topic"] == "Approval automation"
+    assert b["competitor_reference_urls"] == ["https://a.test/1", "https://a.test/2"]  # filled by code, not the LLM
+
+
+def test_brief_falls_back_to_template_after_two_failures():
+    from gaplens.briefs import build_brief
+
+    sections = pd.DataFrame(columns=["section_id", "role", "url", "heading", "text"])
+    clusters = pd.DataFrame(columns=["section_id", "cluster_id"])
+    b = build_brief(_gap_row(), sections, clusters, {}, "Cynbit", "services", FakeLLM(["{}", "{\"topic\": 1}"]))
+    assert b["source"] == "template" and b["model"] is None
